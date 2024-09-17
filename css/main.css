@@ -1,0 +1,589 @@
+* {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.navbar-logo {
+  color: white;
+  padding-top: 5px;
+}
+
+.navbar {
+  color: white;
+  justify-content: center;
+}
+
+.navbar-right {
+  color: white;
+  justify-content: end;
+}
+
+.navbar-toggler {
+  justify-content: end;
+}
+
+a.navbar-brand {
+  padding-left: 0.5rem;
+}
+
+.navbar.fixed-top {
+  z-index: 1030; /* Bootstrap's default z-index for fixed-top navbars */
+}
+
+header {
+  background-color: black;
+  color: white;
+}
+
+h2:not(.header_h2) {
+  text-decoration: underline;
+}
+
+img {
+  /* color: black; */
+  /* outline-style: double; */
+  object-fit: cover;
+  width: auto;
+}
+
+img.img {
+  max-height: 100px;
+}
+
+figure {
+  display: inline-block;
+}
+figcaption {
+  font-style: italic;
+  color: gray;
+  text-align: center;
+}
+
+/* Additional styles for the button if needed */
+.newsletter-form button[type="submit"] {
+margin-left: 75px; 
+margin-top: 10px;
+
+}
+
+.footer {
+  background-color: black;
+  color: white;
+}
+
+.footer-content-row {
+  margin-top: -20px; /* Adjust the value as needed */
+}
+
+.footer-content-row > div {
+  /* Ensures that content is evenly spaced and centered within their columns */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%; /* Ensure the columns are equal height */
+}
+
+.footer .container {
+  padding-top: 0; /* Remove padding at the top */
+}
+
+.end-of-footer {
+  margin-bottom: -50px;
+}
+.footer .footer-links {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.footer .footer-links {
+  padding-left: 0;
+}
+
+.footer .list-inline-item {
+  margin-left: 0; /* Adjust as needed */
+}
+
+.list-inline.footer-links a,
+.list-inline.footer-links a i {
+  color: white !important;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by defau            lt */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (Image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+/* Caption of Modal Image (Image Text) - Same Width as the Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation - Zoom in the Modal */
+.modal-content,
+#caption {
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+  .modal-content {
+    width: 100%;
+  }
+  .cart .quantity input,
+  .cart .price {
+    text-align: left;
+  }
+
+  .cart .remove {
+    display: block;
+    margin-top: 10px;
+  }
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px;
+  border-radius: 10px;
+}
+
+.formcontainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 100px;
+  border-radius: 10px;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+}
+
+.product-details {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-details h2 {
+  margin-top: 0;
+}
+
+.product-details .description {
+  margin-bottom: 15px;
+}
+
+.product-details .price {
+  font-weight: bold;
+}
+
+.product-details button {
+  width: 100%;
+}
+
+.product-details .details {
+  margin-top: 20px;
+}
+
+.btn-smaller {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+.cookieImg {
+  width: 50px;
+  height: 50px;
+}
+
+/* User Profile CSS*/
+.userprofile.container {
+  margin: 0 auto;
+}
+
+.userprofile {
+  max-width: fit-content;
+  margin-inline: auto;
+}
+
+.usermenu {
+  width: 204px;
+  height: 350px;
+  float: left;
+  margin: 10px;
+}
+
+.user-container {
+  border: 2px solid grey;
+}
+
+.userinfo {
+  width: 600px;
+  margin: 10px;
+  min-height: 500px;
+  display: inline-block;
+  border: 2px solid grey;
+}
+
+.userprofile-header {
+  font-weight: bold;
+}
+
+#navigation ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 200px;
+  background-color: #f1f1f1;
+}
+
+#navigation li a {
+  display: block;
+  color: #000;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+#navigation li a:hover {
+  background-color: #555;
+  color: white;
+}
+
+#ordertable {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#ordertable th,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.submitbtn {
+  color: white;
+  background-color: black;
+  text-align: center;
+  width: 200px;
+  padding: 5px;
+}
+
+.review-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.review-text {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.review-timestamp {
+  font-style: italic;
+  color: #888;
+  font-size: 14px;
+}
+
+.review-divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}
+
+/*Cart CSS*/
+
+.content-wrapper {
+  width: 65.625rem; /* 1050px / 16px */
+  margin: auto;
+}
+
+.cart h1 {
+  display: block;
+  font-weight: normal;
+  margin: 0;
+  padding: 2.5rem 0;
+  font-size: 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.cart h2 {
+  display: block;
+  font-weight: normal;
+  margin: 0;
+  padding: 1.25rem 0;
+  font-size: 1.125rem;
+  text-align: center;
+  width: 100%;
+}
+
+.cart table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cart table,
+.cart th,
+.cart td {
+  border-collapse: collapse;
+}
+
+.cart table thead td {
+  padding: 1.875rem 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.cart table thead td:last-child {
+  text-align: right;
+}
+
+.cart table tbody td {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.cart table tbody td:last-child {
+  text-align: right;
+}
+
+.cart table .img {
+  width: 5rem;
+}
+
+.cart table .remove {
+  color: #333333;
+  font-size: 0.75rem;
+  padding-top: 0.1875rem;
+}
+
+.cart table .remove:hover {
+  text-decoration: underline;
+}
+
+.cart table .price {
+  color: #000000;
+}
+
+.cart table a {
+  text-decoration: none;
+  color: #555555;
+}
+
+.cart table input[type="number"] {
+  width: 4.25rem;
+  padding: 0.625rem;
+  border: 1px solid #ccc;
+  color: #555555;
+  border-radius: 0.3125rem;
+}
+
+.cart .subtotal {
+  text-align: right;
+  padding: 2.5rem 0;
+}
+
+.cart .subtotal .text {
+  padding-right: 2.5rem;
+  font-size: 1.125rem;
+}
+
+.cart .subtotal .price {
+  font-size: 1.125rem;
+  color: #000000;
+}
+
+.cart .buttons {
+  text-align: right;
+  padding-bottom: 2.5rem;
+}
+
+.cart .buttons input[type="submit"] {
+  margin-left: 0.3125rem;
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  background: #9d6525;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0.3125rem;
+}
+
+.cart .buttons input[type="submit"]:hover {
+  background: #61401b;
+}
+
+.buttons .cart-back-btn {
+  display: inline-block;
+  margin-left: 0.3125rem;
+  padding: 0.75rem 1.25rem;
+  border-color: #000000;
+  background: #4a4a4a;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0.3125rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.buttons .cart-back-btn:hover {
+  color: #ffffff;
+  text-decoration: none;
+  background: #20262e;
+}
+
+.placeorder h1 {
+  display: block;
+  font-weight: normal;
+  margin: 0;
+  padding: 2.5rem 0;
+  font-size: 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+.placeorder p {
+  text-align: center;
+}
+
+.card-logos {
+  display: flex;
+}
+
+.payment-logo {
+  cursor: pointer;
+  height: 1.875rem;
+  width: auto;
+}
+
+.input-group {
+  position: relative;
+}
+
+.card-icon {
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.position-relative {
+  position: relative;
+}
+
+.card-logo {
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  height: 1.25rem;
+  display: none; /* Hide initially */
+}
+
+.card-number-container input:focus + .card-logo,
+.card-number-container input:valid + .card-logo {
+  display: block; /* Show logo on input focus or when the input is valid */
+}
+
+.invalid-message {
+  color: #ff0000;
+}
+
+.hidden {
+  display: none;
+}
+
+.summary-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+
+.order-summary-back-btn {
+  display: inline-block;
+  margin-left: 0.3125rem;
+  padding: 0.75rem 1.25rem;
+  border-color: #000000;
+  background: #4a4a4a;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0.3125rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.order-summary-back-btn:hover {
+  color: #ffffff;
+  text-decoration: none;
+  background: #20262e;
+}
+
+.btn-success {
+  background-color: #196719 !important; 
+}
+
+.btn-primary {
+  background-color: #0053B3 !important; 
+}
