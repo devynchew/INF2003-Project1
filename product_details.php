@@ -47,7 +47,7 @@
                 echo '<h3>Product Details</h3>';
                 echo '<ul>';
                 //$productRow['feature1']
-                echo '<li>' . 'feature1' . '</li>';
+                echo '<li>' . 'feature1 (you can put color here)' . '</li>';
                 echo '<li>' . 'feature2' . '</li>';
                 echo '<li>' . 'feature3' . '</li>';
                 echo '</ul>';
