@@ -18,10 +18,13 @@ require_once 'session_config.php';
 
             // Create connection
             $connection = mysqli_connect($servername, $username, $password, $dbname);
-
+            //echo "test";
             // Check connection
             if (!$connection) {
-                die("Connection failed: " . mysqli_connect_error());
+                echo "<script>console.error('Connection failed: " . mysqli_connect_error() . "');</script>";
+                die();
+            } else {
+                echo "<script>console.log('SQL Connected successfully');</script>";
             }
         ?>
         <main>
@@ -36,6 +39,7 @@ require_once 'session_config.php';
                             <select class="form-control" id="category" name="category">
                                 <option value="">All Categories</option>
                                 <?php
+                                /*
                                     // Fetch distinct categories from the database
                                     $sql_categories = "SELECT DISTINCT category FROM product";
                                     $result_categories = mysqli_query($connection, $sql_categories);
@@ -44,6 +48,7 @@ require_once 'session_config.php';
                                             echo '<option value="' . $row_category['category'] . '">' . $row_category['category'] . '</option>';
                                         }
                                     }
+                                        */
                                 ?>
                             </select>
                         </div>
@@ -58,22 +63,21 @@ require_once 'session_config.php';
             <div class="row">
                     <?php
                         // Adjust SQL query based on the selected category
-                        $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
-                        $sql = "SELECT productID, productName, productInfo, productPrice, productImg FROM product";
-                        if (!empty($category_filter)) {
+                        //$category_filter = isset($_GET['category']) ? $_GET['category'] : '';
+                        $sql = "SELECT product_id, name, description, price, image_url FROM products";
+                        /*if (!empty($category_filter)) {
                             $sql .= " WHERE category = '$category_filter'";
-                        }
+                        }*/
                         $result = mysqli_query($connection, $sql);
-
                         if (mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
                                 echo '<div class="col-md-4 mb-4">';
                                 echo '<div class="card">';
-                                echo '<img src="' . $row['productImg'] . '" class="card-img-top" alt="Product Image">';
+                                echo '<img src="' . $row['image_url'] . '" class="card-img-top" alt="Product Image">';
                                 echo '<div class="card-body">';
-                                echo '<h2 class="card-title" style="font-size: 16px;">' . $row['productName'] . '</h2>';
-                                echo '<p class="card-text">$' . $row['productPrice'] . '</p>';
-                                echo '<a href="product_details.php?id=' . $row['productID'] . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
+                                echo '<h2 class="card-title" style="font-size: 16px;">' . $row['name'] . '</h2>';
+                                echo '<p class="card-text">$' . $row['price'] . '</p>';
+                                echo '<a href="product_details.php?id=' . $row['product_id'] . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
                                 echo '</div>';
                                 echo '</div>'; 
                                 echo '</div>'; 
