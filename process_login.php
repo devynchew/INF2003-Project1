@@ -32,7 +32,7 @@ if (empty($_POST["pwd"])) {
     $errorMsg .= "Password is required.<br>";
     $success = false;
 } else {
-    $pwd = $_POST["pwd"]; 
+    $pwd = $_POST["pwd"];
 }
 
 // Attempt to authenticate the user if there are no prior input validation errors
@@ -78,14 +78,14 @@ function authenticateUser($email, $pwd)
     }
 
     // Prepare and execute the statement
-    $stmt = $conn->prepare("SELECT member_id, fname, lname, password, isAdmin FROM members WHERE email=?");
+    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, isAdmin FROM users WHERE email=?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $member_id = $row["member_id"];
+        $user_id = $row["user_id"];
         $fname = $row["fname"];
         $lname = $row["lname"];
         if (password_verify($pwd, $row["password"])) {
@@ -93,7 +93,7 @@ function authenticateUser($email, $pwd)
             $success = true;
             // Set session variables
             $_SESSION['user_logged_in'] = true;
-            $_SESSION['member_id'] = $member_id;
+            $_SESSION['user_id'] = $user_id;
             $_SESSION['fname'] = $fname;
             $_SESSION['lname'] = $lname;
             $_SESSION['email'] = $email;
@@ -111,7 +111,7 @@ function authenticateUser($email, $pwd)
 
     $stmt->close();
     $conn->close();
-}?>
+} ?>
 
 
 <body>
