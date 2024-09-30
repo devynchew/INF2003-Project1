@@ -70,12 +70,12 @@ if (empty($_POST["pwd"]) || empty($_POST["pwd_confirm"])) {
     $errorMsg .= "Passwords do not match.";
     $success = false;
 } else {
-    $pwd = $_POST["pwd"];
-    $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
-    if (!$hashed_pwd) {
-        $errorMsg .= "Cannot hash password";
-        $success = false;
-    }
+    $hashed_pwd = $_POST["pwd"];
+    // $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
+    // if (!$hashed_pwd) {
+    //     $errorMsg .= "Cannot hash password";
+    //     $success = false;
+    // }
 }
 
 // Terms and Conditions Validation
@@ -110,7 +110,7 @@ function saveMemberToDB()
             $success = false;
         } else {
             // Prepare the statement:
-            $stmt = $conn->prepare("INSERT INTO members (fname, lname, email, password) VALUES (?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO users (fname, lname, email, password) VALUES (?, ?, ?, ?)");
             // Bind & execute the query statement:
             $stmt->bind_param("ssss", $fname, $lname, $email, $hashed_pwd);
             if (!$stmt->execute()) {
