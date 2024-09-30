@@ -3,31 +3,32 @@ require_once 'session_config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <body>
-        <?php
-            include "inc/head.inc.php";
-            include "inc/header.inc.php";
-            include "inc/nav.inc.php";
 
-            $config = parse_ini_file('/var/www/private/db-config.ini');
-            // Establish MySQL connection using the server connection info from the function
-            $servername = $config['servername'];
-            $username = $config['username'];
-            $password = $config['password'];
-            $dbname = $config['dbname'];
+<body>
+    <?php
+    include "inc/head.inc.php";
+    include "inc/header.inc.php";
+    include "inc/nav.inc.php";
 
-            // Create connection
-            $connection = mysqli_connect($servername, $username, $password, $dbname);
-            //echo "test";
-            // Check connection
-            if (!$connection) {
-                echo "<script>console.error('Connection failed: " . mysqli_connect_error() . "');</script>";
-                die();
-            } else {
-                echo "<script>console.log('SQL Connected successfully');</script>";
-            }
-        ?>
-        <main>
+    $config = parse_ini_file('/var/www/private/db-config.ini');
+    // Establish MySQL connection using the server connection info from the function
+    $servername = $config['servername'];
+    $username = $config['username'];
+    $password = $config['password'];
+    $dbname = $config['dbname'];
+
+    // Create connection
+    $connection = mysqli_connect($servername, $username, $password, $dbname);
+    //echo "test";
+    // Check connection
+    if (!$connection) {
+        echo "<script>console.error('Connection failed: " . mysqli_connect_error() . "');</script>";
+        die();
+    } else {
+        echo "<script>console.log('SQL Connected successfully');</script>";
+    }
+    ?>
+    <main>
         <div class="container">
             <h1 class="mt-5 mb-3">Our Products</h1>
 
@@ -61,33 +62,37 @@ require_once 'session_config.php';
             </div>
 
             <div class="row">
-                    <?php
-                        // Adjust SQL query based on the selected category
-                        //$category_filter = isset($_GET['category']) ? $_GET['category'] : '';
-                        $sql = "SELECT product_id, name, description, price, image_url FROM products";
-                        /*if (!empty($category_filter)) {
+                <?php
+                // Adjust SQL query based on the selected category
+                //$category_filter = isset($_GET['category']) ? $_GET['category'] : '';
+                $sql = "SELECT product_id, name, description, price, image_url FROM products";
+                /*if (!empty($category_filter)) {
                             $sql .= " WHERE category = '$category_filter'";
                         }*/
-                        $result = mysqli_query($connection, $sql);
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                echo '<div class="col-md-4 mb-4">';
-                                echo '<div class="card">';
-                                echo '<img src="' . $row['image_url'] . '" class="card-img-top" alt="Product Image">';
-                                echo '<div class="card-body">';
-                                echo '<h2 class="card-title" style="font-size: 16px;">' . $row['name'] . '</h2>';
-                                echo '<p class="card-text">$' . $row['price'] . '</p>';
-                                echo '<a href="product_details.php?id=' . $row['product_id'] . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
-                                echo '</div>';
-                                echo '</div>'; 
-                                echo '</div>'; 
-                            }
-                        } else {
-                            echo "No products found";
-                        }
-                    ?>
-                </div>
+                $result = mysqli_query($connection, $sql);
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo '<div class="col-md-4 mb-4">';
+                        echo '<div class="card">';
+                        echo '<img src="' . $row['image_url'] . '" class="card-img-top" alt="Product Image">';
+                        echo '<div class="card-body">';
+                        echo '<h2 class="card-title" style="font-size: 16px;">' . $row['name'] . '</h2>';
+                        echo '<p class="card-text">$' . $row['price'] . '</p>';
+                        echo '<a href="product_details.php?id=' . $row['product_id'] . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo "No products found";
+                }
+                ?>
+            </div>
         </div>
-        </main>
-    </body>
+    </main>
+    <?php
+    include "inc/footer.inc.php";
+    ?>
+</body>
+
 </html>

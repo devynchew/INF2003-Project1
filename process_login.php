@@ -78,7 +78,7 @@ function authenticateUser($email, $pwd)
     }
 
     // Prepare and execute the statement
-    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, isAdmin FROM users WHERE email=?");
+    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, is_admin FROM users WHERE email=?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -88,7 +88,7 @@ function authenticateUser($email, $pwd)
         $user_id = $row["user_id"];
         $fname = $row["fname"];
         $lname = $row["lname"];
-        if (password_verify($pwd, $row["password"])) {
+        if ($pwd === $row["password"]) {
             // Password matches, authentication successful
             $success = true;
             // Set session variables
@@ -97,7 +97,7 @@ function authenticateUser($email, $pwd)
             $_SESSION['fname'] = $fname;
             $_SESSION['lname'] = $lname;
             $_SESSION['email'] = $email;
-            $_SESSION['isAdmin'] = $row["isAdmin"];
+            $_SESSION['is_admin'] = $row["is_admin"];
         } else {
             // Invalid password
             $errorMsg = "Email not found or password doesn't match...";

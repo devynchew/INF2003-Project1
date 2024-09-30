@@ -129,7 +129,6 @@ function saveMemberToDB()
     <div class="content-wrapper">
         <div class="container">
             <div class="text-center">
-
                 <?php if ($success) : ?>
                     <div class='success-message'>
                         <h3>Your registration is successful.</h3>
