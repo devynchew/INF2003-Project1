@@ -19,7 +19,7 @@ require_once 'session_config.php';
 
     // Create connection
     $connection = mysqli_connect($servername, $username, $password, $dbname);
-    //echo "test";
+
     // Check connection
     if (!$connection) {
         echo "<script>console.error('Connection failed: " . mysqli_connect_error() . "');</script>";
@@ -53,10 +53,11 @@ require_once 'session_config.php';
                                 ?>
                             </select>
                         </div>
+                    </form>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary" style="background-color: #0056b3; margin-bottom: 15px;">Apply Filter</button>
-                    </form>
+
 
                 </div>
             </div>

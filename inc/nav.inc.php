@@ -24,6 +24,9 @@ require_once 'session_config.php';
                     <a class="nav-link" href="product.php">Products</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="manage_products.php">Manage Products</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="aboutus.php">About us</a>
                 </li>
             </ul>
