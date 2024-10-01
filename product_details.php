@@ -20,11 +20,32 @@
 
     function displayProductAndReviews($connection)
     {
+        $user_id = 1; // Assuming user ID is 1 for now because idk how to get user id
+
         // Check if product ID is set in the URL
-        if (isset($_GET['id'])) {
+        if (isset($user_id) &&isset($_GET['id'])) {
             // Retrieve productID from URL parameter
             $productID = $_GET['id'];
 
+            // click count part, hardcode user to 1 first
+            $check_click_sql = "SELECT click_id, click_count FROM clicks WHERE user_id = 1 AND product_id = $productID";
+            $clickResult = mysqli_query($connection, $check_click_sql);
+        
+            if (mysqli_num_rows($clickResult) > 0) {
+                // If record exists, fetch the click_count and increment it
+                $row = mysqli_fetch_assoc($clickResult);
+                $click_id = $row['click_id'];
+                $new_click_count = $row['click_count'] + 1;
+        
+                // Update the existing click_count
+                $update_click_sql = "UPDATE clicks SET click_count = $new_click_count WHERE click_id = $click_id";
+                mysqli_query($connection, $update_click_sql);
+            } else {
+                // If no record exists, insert a new row with click_count = 1
+                $insert_click_sql = "INSERT INTO clicks (user_id, product_id, click_count) VALUES ($user_id, $productID, 1)";
+                mysqli_query($connection, $insert_click_sql);
+            }
+        
             // Fetch product details from the database
             //$productSql = "SELECT productName, productInfo, productPrice, productImg FROM product WHERE productID = $productID";
             $productSql = "SELECT name, description, price, image_url, category_id FROM products WHERE product_id = $productID";
