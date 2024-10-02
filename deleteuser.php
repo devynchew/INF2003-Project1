@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header("Location: login.php");
     exit;
 }
@@ -22,12 +22,12 @@ function sanitize_input($data) {
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'])) {
     // Sanitize the input to prevent XSS attacks
-    $memberId = sanitize_input($_POST['member_id']);
+    $memberId = sanitize_input($_POST['user_id']);
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("DELETE FROM members WHERE member_id = ?");
+    $stmt = $conn->prepare("DELETE FROM users WHERE user_id = ?");
 
     // Bind the parameter to the statement
     $stmt->bind_param("i", $memberId);
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
         if ($stmt->affected_rows > 0) {
             $_SESSION['successMsg'] = "User deleted successfully.";
         } else {
-            // No row was deleted, possibly because the member_id was not found
+            // No row was deleted, possibly because the user_id was not found
             $_SESSION['errorMsg'] = "User not found or already deleted.";
         }
     } else {

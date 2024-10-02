@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header("Location: login.php");
     exit;
 }
@@ -14,7 +14,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT orderID, orderStatus, totalPrice, orderDate, member_id FROM orders";
+$sql = "SELECT order_id, orderStatus, totalPrice, orderDate, member_id FROM orders";
 $result = $conn->query($sql);
 ?>
 
@@ -61,7 +61,7 @@ $result = $conn->query($sql);
                 <?php if ($result->num_rows > 0): ?>
                     <?php while($row = $result->fetch_assoc()): ?>
                         <tr>
-                            <td><?= htmlspecialchars($row['orderID']) ?></td>
+                            <td><?= htmlspecialchars($row['order_id']) ?></td>
                             <td><?= htmlspecialchars($row['orderStatus']) ?></td>
                             <td><?= htmlspecialchars($row['totalPrice']) ?></td>
                             <td><?= htmlspecialchars($row['orderDate']) ?></td>
@@ -69,12 +69,12 @@ $result = $conn->query($sql);
                             <td>
                                 <?php if ($row['orderStatus'] == 'Request for Refund'): ?>
                                     <form action="approveRefund.php" method="post" style="display: inline;">
-                                        <input type="hidden" name="orderID" value="<?= $row['orderID'] ?>">
+                                        <input type="hidden" name="order_id" value="<?= $row['order_id'] ?>">
                                         <button type="submit" class="btn btn-success btn-sm">Approve</button>
                                     </form>
                                     <?php endif; ?>
                     <form action="deleteOrder.php" method="post" style="display: inline;">
-                        <input type="hidden" name="orderID" value="<?= $row['orderID'] ?>">
+                        <input type="hidden" name="order_id" value="<?= $row['order_id'] ?>">
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
                     </form>
                             </td>

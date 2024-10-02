@@ -40,6 +40,7 @@
                         <th scope="col" class="text-nowrap">Category</th>
                         <th scope="col" class="text-nowrap">Available Colors</th>
                         <th scope="col" class="text-nowrap">Gender</th>
+                        <th scope="col" class="text-nowrap"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,6 +76,7 @@
                             echo '<td class="text-nowrap">' . $row['category'] . '</td>';
                             echo '<td class="text-nowrap">' . $row['colors'] . '</td>';
                             echo '<td class="text-nowrap">' . $row['gender'] . '</td>';
+                            echo '<td class="text-nowrap"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2">Edit</button></td>';
                             echo '</tr>';
                         }
                     } else {
@@ -84,6 +86,31 @@
                     ?>
                 </tbody>
             </table>
+        </div>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            Launch demo modal
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>

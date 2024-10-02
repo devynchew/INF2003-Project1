@@ -24,7 +24,7 @@ require_once 'session_config.php';
                     <a class="nav-link" href="product.php">Products</a>
                 </li>
                 <!-- Show cart only if user is logged in -->
-                <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
+                <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="manage_products.php">Manage Products</a>
                     </li>
@@ -60,7 +60,7 @@ require_once 'session_config.php';
                 <?php else: ?>
 
                     <!-- If user is ADMIN -->
-                    <?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1): ?>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
 
                         <li class="nav-item">
                             <a class="nav-link" href="adminpage.php" aria-label="admin user"><i class="fa-solid fa-screwdriver-wrench" style="color: #ffffff;"></i></a>

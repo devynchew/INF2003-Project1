@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header("Location: login.php");
     exit;
 }
@@ -18,7 +18,8 @@ if ($conn->connect_error) {
 
 $isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
 
-function sanitize_input($data) {
+function sanitize_input($data)
+{
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
@@ -27,12 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
     $fname = sanitize_input($_POST['fname']);
     $lname = sanitize_input($_POST['lname']);
     $email = sanitize_input($_POST['email']);
-    $isAdmin = ($isSuperAdmin && isset($_POST['isAdmin'])) ? 1 : 0; // Assuming checkbox sends on value if checked
+    $is_admin = ($isSuperAdmin && isset($_POST['is_admin'])) ? 1 : 0; // Assuming checkbox sends on value if checked
 
     if ($isSuperAdmin) {
-        $sql = "UPDATE members SET fname = ?, lname = ?, email = ?, isAdmin = ? WHERE member_id = ?";
+        $sql = "UPDATE users SET fname = ?, lname = ?, email = ?, is_admin = ? WHERE user_id = ?";
     } else {
-        $sql = "UPDATE members SET fname = ?, lname = ?, email = ? WHERE member_id = ?";
+        $sql = "UPDATE users SET fname = ?, lname = ?, email = ? WHERE user_id = ?";
     }
 
     $stmt = $conn->prepare($sql);
@@ -44,14 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
     }
 
     if ($isSuperAdmin) {
-        $stmt->bind_param("sssii", $fname, $lname, $email, $isAdmin, $memberId);
+        $stmt->bind_param("sssii", $fname, $lname, $email, $is_admin, $memberId);
     } else {
         $stmt->bind_param("sssi", $fname, $lname, $email, $memberId);
     }
 
     if ($stmt->execute()) {
         unset($_SESSION['errorMsg']);
-        $_SESSION['successMsg']= "Success!";
+        $_SESSION['successMsg'] = "Success!";
     } else {
         $_SESSION['errorMsg'] = "Failed to update user. Error: " . $stmt->error;
     }
@@ -64,4 +65,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
 $conn->close();
 header("Location: manageuser.php");
 exit;
-?>

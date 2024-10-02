@@ -6,7 +6,7 @@ $conn = new mysqli($config['servername'], $config['username'], $config['password
 
 // Check if the user is logged in and if they are an admin or superadmin
 // This is a simplified check; your actual implementation might be different
-if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header("Location: login.php");
     exit;
 }
@@ -15,7 +15,7 @@ if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
 $isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
 
 // Prepare the SQL query based on user role
-$sql = "SELECT member_id, fname, lname, email" . ($isSuperAdmin ? ", isAdmin" : "") . " FROM members";
+$sql = "SELECT user_id, fname, lname, email" . ($isSuperAdmin ? ", is_admin" : "") . " FROM users";
 
 $result = $conn->query($sql);
 
@@ -69,17 +69,17 @@ if (!$result) {
                         <tbody>
                             <?php while($row = $result->fetch_assoc()): ?>
                                 <tr>
-                                <td><?= htmlspecialchars($row['member_id']) ?></td>
-                                <td id="fname_<?= $row['member_id'] ?>"><?= htmlspecialchars($row['fname']) ?></td>
-                                <td id="lname_<?= $row['member_id'] ?>"><?= htmlspecialchars($row['lname']) ?></td>
-                                <td id="email_<?= $row['member_id'] ?>"><?= htmlspecialchars($row['email']) ?></td>
+                                <td><?= htmlspecialchars($row['user_id']) ?></td>
+                                <td id="fname_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['fname']) ?></td>
+                                <td id="lname_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['lname']) ?></td>
+                                <td id="email_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['email']) ?></td>
                                 <?php if ($isSuperAdmin): ?>
-                                    <td id="isAdmin_<?= $row['member_id'] ?>"><?= $row['isAdmin'] ? 'Yes' : 'No' ?></td>
+                                    <td id="is_admin_<?= $row['user_id'] ?>"><?= $row['is_admin'] ? 'Yes' : 'No' ?></td>
                                 <?php endif; ?>
-                                <td id="actions_<?= $row['member_id'] ?>">
-                                <button type="button" onclick="editRow(<?= $row['member_id'] ?>)" class="btn btn-primary">Edit</button>
+                                <td id="actions_<?= $row['user_id'] ?>">
+                                <button type="button" onclick="editRow(<?= $row['user_id'] ?>)" class="btn btn-primary">Edit</button>
                                 <form action="deleteuser.php" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline-block;">
-                                <input type="hidden" name="member_id" value="<?= htmlspecialchars($row['member_id']) ?>">
+                                <input type="hidden" name="user_id" value="<?= htmlspecialchars($row['user_id']) ?>">
                                 <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
                                 </td>

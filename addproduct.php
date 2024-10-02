@@ -2,7 +2,7 @@
 require_once 'session_config.php';
 
 // Check if the user is logged in and is an admin
-if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header("Location: login.php");
     exit;
 }
