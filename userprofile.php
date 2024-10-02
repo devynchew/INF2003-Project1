@@ -39,7 +39,7 @@
                 else
                 {
                     // Prepare the statement:
-                    $stmt = $conn->prepare("SELECT * FROM members WHERE email=?");
+                    $stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
 
                     // Bind & execute the query statement:
                     $stmt->bind_param("s", $email);

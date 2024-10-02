@@ -95,7 +95,7 @@ require_once 'session_config.php';
                     else
                     {
                         // Prepare the statement:
-                        $stmt = $conn->prepare("UPDATE members SET fname=? , lname=? WHERE email=?");
+                        $stmt = $conn->prepare("UPDATE users SET fname=? , lname=? WHERE email=?");
 
                         // Bind & execute the query statement:
                         $stmt->bind_param("sss", $fname, $lname, $email);
