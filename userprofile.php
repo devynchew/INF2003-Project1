@@ -52,6 +52,7 @@
                         $row = $result->fetch_assoc();
                         $fname = $row["fname"];
                         $lname = $row["lname"];
+                        $address = $row["address"];
                         $pwd_hashed = $row["password"];
 
                     }
@@ -104,6 +105,10 @@
                         <div class="form-group">
                             <label>Last Name</label>
                             <input type="text" class="form-control" name="lname" style="width:20em;" placeholder="Enter your Last Name" required value="<?php echo $lname; ?>" />
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" class="form-control" name="address" style="width:20em;" placeholder="Enter your Address" required value="<?php echo $address; ?>" />
                         </div>
                         <div class="form-group">    
                             <button type='submit' class='submitbtn'>Update</button><br><br>

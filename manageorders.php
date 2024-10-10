@@ -14,7 +14,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT order_id, orderStatus, totalPrice, orderDate, member_id FROM orders";
+$sql = "SELECT o.order_id, u.email, o.order_month, o.order_year, COUNT(p.quantity) AS quantity, o.total_amount
+FROM orders o
+JOIN users u ON o.user_id = u.user_id
+JOIN ordersproduct p ON o.order_id = p.order_id
+GROUP BY o.order_id
+";
 $result = $conn->query($sql);
 ?>
 
@@ -50,10 +55,10 @@ $result = $conn->query($sql);
             <thead>
                 <tr>
                     <th>Order ID</th>
-                    <th>Status</th>
-                    <th>Total Price</th>
+                    <th>Email</th>
                     <th>Order Date</th>
-                    <th>Member ID</th>
+                    <th>Quantity</th>
+                    <th>Total Amount</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -62,10 +67,10 @@ $result = $conn->query($sql);
                     <?php while($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?= htmlspecialchars($row['order_id']) ?></td>
-                            <td><?= htmlspecialchars($row['orderStatus']) ?></td>
-                            <td><?= htmlspecialchars($row['totalPrice']) ?></td>
-                            <td><?= htmlspecialchars($row['orderDate']) ?></td>
-                            <td><?= htmlspecialchars($row['member_id']) ?></td>
+                            <td><?= htmlspecialchars($row['email']) ?></td>
+                            <td><?= htmlspecialchars($row['order_month']."/".$row['order_year']) ?></td>
+                            <td><?= htmlspecialchars($row['quantity']) ?></td>
+                            <td><?= htmlspecialchars($row['total_amount']) ?></td>
                             <td>
                                 <?php if ($row['orderStatus'] == 'Request for Refund'): ?>
                                     <form action="approveRefund.php" method="post" style="display: inline;">

@@ -36,7 +36,7 @@ if (isset($_POST['product_id'], $_POST['quantity'])) {
     }
 
     // Fetch product details from the database
-    $stmt = $conn->prepare('SELECT * FROM product WHERE productID = ?');
+    $stmt = $conn->prepare('SELECT * FROM products WHERE product_id = ?');
     $stmt->bind_param('i', $product_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -102,7 +102,7 @@ $subtotal = 0.00;
 
 if ($products_in_cart) {
     $product_ids = implode(',', array_keys($products_in_cart));
-    $sql = "SELECT * FROM product WHERE productID IN ($product_ids)";
+    $sql = "SELECT * FROM products WHERE product_id IN ($product_ids)";
     $result = $conn->query($sql);
 
     if ($result === false) {
@@ -111,13 +111,13 @@ if ($products_in_cart) {
 
     // Calculate subtotal and organize product data
     while ($row = $result->fetch_assoc()) {
-        if (isset($products_in_cart[$row['productID']])) {
-            $productID = $row['productID'];
+        if (isset($products_in_cart[$row['product_id']])) {
+            $productID = $row['product_id'];
             $products[$productID] = $row;
             $products_in_cart[$productID] += [
-                'name' => $row['productName'],
-                'img' => $row['productImg'],
-                'total' => $row['productPrice'] * $products_in_cart[$productID]['quantity']
+                'name' => $row['name'],
+                'img' => $row['image_url'],
+                'total' => $row['price'] * $products_in_cart[$productID]['quantity']
             ];
             $subtotal += $products_in_cart[$productID]['total'];
         }
@@ -144,6 +144,8 @@ $title = "Cart Page";
                         <tr>
                             <td colspan="2">Product</td>
                             <td>Price</td>
+                            <td>Size</td>
+                            <td>Color</td>
                             <td>Quantity</td>
                             <td>Total</td>
                         </tr>
@@ -167,6 +169,8 @@ $title = "Cart Page";
                                         <a href="cart.php?remove=<?= $product_id ?>" class="remove">Remove</a>
                                     </td>
                                     <td class="price">&dollar;<?= number_format($cart_item['price'], 2) ?></td>
+                                    <td class="size"><?= htmlspecialchars($cart_item['size']) ?></td>
+                                    <td class="color"><?= htmlspecialchars($cart_item['color']) ?></td>
                                     <td class="quantity">
                                         <input type="number" name="quantity-<?= $product_id ?>" value="<?= $cart_item['quantity'] ?>" min="1" max="20" placeholder="Quantity" required>
                                     </td>

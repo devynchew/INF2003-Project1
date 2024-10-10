@@ -3,7 +3,7 @@ require_once 'session_config.php';
 session_start();
 $fname = $_SESSION['fname'];
 $email=$_SESSION['email'];
-$orderID = $_GET['orderID'];
+$order_id = $_GET['order_id'];
 ?>
 
 
@@ -42,7 +42,7 @@ $orderID = $_GET['orderID'];
                     
                 <div class="userinfo">
                     <div class="profile-input-field" style="margin:20px;">
-                        <h4 class="userprofile-header">Order #<?php echo $orderID ?></h4>
+                        <h4 class="userprofile-header">Order #<?php echo $order_id ?></h4>
                         <p>View your order details.</p>
 
                         <table id="ordertable" style="border-collapse: collapse; width:100%;">
@@ -51,7 +51,6 @@ $orderID = $_GET['orderID'];
                                 <th>Product ID</th>
                                 <th>Name</th>
                                 <th>Price</th>
-                                <th>Information</th>
                                 <th>Quantity</th>
                             </tr>
 
@@ -81,10 +80,10 @@ $orderID = $_GET['orderID'];
                                     else
                                     {
                                         // Prepare the statement to get all products from order
-                                        $stmt = $conn->prepare("SELECT * FROM order_items WHERE orderID=?");
+                                        $stmt = $conn->prepare("SELECT * FROM ordersproduct WHERE order_id=?");
 
                                         // Bind & execute the query statement:
-                                        $stmt->bind_param("s", $orderID);
+                                        $stmt->bind_param("s", $order_id);
                                         $stmt->execute();
                                         $result = $stmt->get_result();
                                         $rowcount = mysqli_num_rows($result);
@@ -92,19 +91,18 @@ $orderID = $_GET['orderID'];
                                         while ($row = $result->fetch_assoc())
                                         {
                                             // Prepare the statement to get all product
-                                            $stmt1 = $conn->prepare("SELECT * FROM product WHERE productID=?");
+                                            $stmt1 = $conn->prepare("SELECT * FROM products WHERE product_id=?");
 
                                             
-                                            $stmt1->bind_param("s", $row["productID"]);
+                                            $stmt1->bind_param("s", $row["product_id"]);
                                             $stmt1->execute();
                                             $result1 = $stmt1->get_result();
                                             $row1 = $result1->fetch_assoc();
 
                                             echo "<tr style='padding-top: 10px;'>";
-                                            echo "<td><a href='product_details.php?id=".$row["productID"]."'>".$row["productID"]."</a></td>";
-                                            echo "<td>".$row1["productName"]."</td>";
-                                            echo "<td>".$row1["productPrice"]."</td>";
-                                            echo "<td>".$row1["productInfo"]."</td>";
+                                            echo "<td><a href='product_details.php?id=".$row["product_id"]."'>".$row["product_id"]."</a></td>";
+                                            echo "<td>".$row1["name"]."</td>";
+                                            echo "<td>".$row1["price"]."</td>";
                                             echo "<td>".$row["quantity"]."</td>";
                                             echo "</tr>";
                                         }

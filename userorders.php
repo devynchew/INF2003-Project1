@@ -50,9 +50,8 @@ $errorMsg = false;
                             <tr style="border-bottom: 1px solid #ddd;">
                                 
                                 <th>Order</th>
-                                <th>Status</th>
-                                <th>Total Price</th>
                                 <th>Date</th>
+                                <th>Total Price</th>
                                 <th></th>
                             </tr>
 
@@ -82,7 +81,7 @@ $errorMsg = false;
                                     else
                                     {
                                         // Prepare the statement to get member id from email
-                                        $stmt = $conn->prepare("SELECT * FROM orders WHERE member_id = (SELECT member_id FROM members WHERE email=?)");
+                                        $stmt = $conn->prepare("SELECT * FROM orders WHERE user_id = (SELECT user_id FROM users WHERE email=?)");
                                         // $stmt = $conn->prepare("SELECT * FROM orders WHERE member_id = '4'");
 
                                         // Bind & execute the query statement:
@@ -98,14 +97,14 @@ $errorMsg = false;
                                                 $date = date("Y-m-d",strtotime($row["orderDate"]));
 
                                                 echo "<tr style='padding-top: 10px;'>";
-                                                echo "<td><a href='orderdetails.php?orderID=".$row["orderID"]."'>".$row["orderID"]."</a></td>";
-                                                echo "<td>".$row["orderStatus"]."</td>";
-                                                echo "<td>".$row["totalPrice"]."</td>";
+                                                echo "<td><a href='orderdetails.php?order_id=".$row["order_id"]."'>".$row["order_id"]."</a></td>";
+                                                echo "<td>".$row["order_month"]."/".$row["order_year"]."</td>";
+                                                echo "<td>".$row["total_amount"]."</td>";
                                                 echo "<td>".$date."</td>";
                                                 echo "<td>";
                                                 if ($row["orderStatus"] != "Refunded") {
                                                     echo "<form action='refund.php' method='post'>";
-                                                    echo "<input type='hidden' name='orderID' value='" . $row['orderID'] . "'>";
+                                                    echo "<input type='hidden' name='order_id' value='" . $row['order_id'] . "'>";
                                                     echo "<button type='submit' class='btn btn-warning btn-sm'>Request Refund</button>";
                                                     echo "</form>";
                                                 }

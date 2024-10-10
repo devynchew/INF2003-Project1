@@ -50,25 +50,25 @@ $products_in_cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 if (!empty($products_in_cart)) {
     $product_ids = array_keys($products_in_cart);
     $placeholders = implode(',', array_fill(0, count($product_ids), '?'));
-    $stmt = $conn->prepare("SELECT productID, productName, productPrice, productImg FROM product WHERE productID IN ($placeholders)");
+    $stmt = $conn->prepare("SELECT product_id, name, price, image_url FROM products WHERE product_id IN ($placeholders)");
     $stmt->bind_param(str_repeat('i', count($product_ids)), ...$product_ids);
     $stmt->execute();
     $result = $stmt->get_result();
     $products = $result->fetch_all(MYSQLI_ASSOC);
 
     foreach ($products as $product) {
-        $productID = $product['productID'];
+        $productID = $product['product_id'];
         $quantity = $products_in_cart[$productID]['quantity'];
-        $price = $product['productPrice'];
+        $price = $product['price'];
         $total = $price * $quantity;
         $subtotal += $total;
-        $products_in_cart[$productID]['name'] = $product['productName'];
-        $products_in_cart[$productID]['img'] = $product['productImg'];
+        $products_in_cart[$productID]['name'] = $product['name'];
+        $products_in_cart[$productID]['img'] = $product['image_url'];
 
         // Update session cart with all details including name and img
         $_SESSION['cart'][$productID] = [
-            'name' => $product['productName'],
-            'img' => $product['productImg'],
+            'name' => $product['name'],
+            'img' => $product['image_url'],
             'price' => $price,
             'quantity' => $quantity,
             'total' => $total
@@ -107,10 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             $quantity = $details['quantity'];
             $productPrice = $details['price'];
 
-            $stmt = $conn->prepare("UPDATE product SET quantity = quantity - ? WHERE productID = ?");
-            $stmt->bind_param('ii', $quantity, $productID);
-            $stmt->execute();
-            $stmt->close();
+            // $stmt = $conn->prepare("UPDATE product SET quantity = quantity - ? WHERE productID = ?");
+            // $stmt->bind_param('ii', $quantity, $productID);
+            // $stmt->execute();
+            // $stmt->close();
 
             $cart_details[] = [
                 'productID' => $productID,
@@ -186,9 +186,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                             <img src="<?= $item['img'] ?>" width="50" height="50" alt="<?= htmlspecialchars($item['name']) ?>">
                             <?= htmlspecialchars($item['name']) ?>
                         </td>
-                        <td>&dollar;<?= number_format($item['price'], 2) ?></td>
+                        <td>&dollar;<?= $item['price'] ?></td>
                         <td><?= $item['quantity'] ?></td>
-                        <td>&dollar;<?= number_format($item['price'] * $item['quantity'], 2) ?></td>
+                        <td>&dollar;<?= $item['price'] * $item['quantity'] ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>

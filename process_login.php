@@ -1,6 +1,8 @@
 <?php
 require_once 'session_config.php';
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Sanitization helper function
 function sanitize_input($data)
 {
@@ -98,6 +100,7 @@ function authenticateUser($email, $pwd)
             $_SESSION['lname'] = $lname;
             $_SESSION['email'] = $email;
             $_SESSION['is_admin'] = $row["is_admin"];
+            echo 'success login, session set';
         } else {
             // Invalid password
             $errorMsg = "Email not found or password doesn't match...";

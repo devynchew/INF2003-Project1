@@ -21,7 +21,7 @@ require_once 'session_config.php';
             error_reporting(E_ALL);
             
             $email=$_SESSION['email'];
-            $fname = $lname = $errorMsg = "";
+            $fname = $lname = $address = $errorMsg = "";
             $success = true;
 
             // First Name
@@ -38,6 +38,14 @@ require_once 'session_config.php';
                 $success = false;
             } else {
                 $lname = sanitize_input($_POST["lname"]);
+            }
+
+            // Address
+            if (empty($_POST["address"])) {
+                $errorMsg .= "Address is required.<br>";
+                $success = false;
+            } else {
+                $address = sanitize_input($_POST["address"]);
             }
 
             if ($success) {
@@ -69,7 +77,7 @@ require_once 'session_config.php';
             */
             function updateMemberToDB()
             {
-                global $fname, $lname, $email, $errorMsg, $success;
+                global $fname, $lname, $address, $email, $errorMsg, $success;
 
                 // Create database connection.
                 $config = parse_ini_file('/var/www/private/db-config.ini');
@@ -95,10 +103,10 @@ require_once 'session_config.php';
                     else
                     {
                         // Prepare the statement:
-                        $stmt = $conn->prepare("UPDATE users SET fname=? , lname=? WHERE email=?");
+                        $stmt = $conn->prepare("UPDATE users SET fname=? , lname=? , address=? WHERE email=?");
 
                         // Bind & execute the query statement:
-                        $stmt->bind_param("sss", $fname, $lname, $email);
+                        $stmt->bind_param("ssss", $fname, $lname, $address, $email);
 
                         $_SESSION['fname'] = $fname;
 
