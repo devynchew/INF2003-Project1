@@ -34,11 +34,12 @@ require_once 'session_config.php';
 
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <form method="GET" action="">
+                    <form id="cat-filter" method="get" action="">
                         <div class="form-group">
                             <label for="category">Filter by Category:</label>
                             <select class="form-control" id="category" name="category">
                                 <option value="">All Categories</option>
+
                                 <?php
                                 
                                     // Fetch distinct categories from the database
@@ -58,15 +59,21 @@ require_once 'session_config.php';
                     </form>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary" style="background-color: #0056b3; margin-bottom: 15px;">Apply Filter</button>
-
+                    <button type="submit" form="cat-filter" class="btn btn-primary" style="background-color: #0056b3; margin-bottom: 15px;">Apply Filter</button>
                 </div>
-            </div>
+            <?php
 
+                 if (isset($_GET['category'])!="") {
+                    echo '<h4 class="col-md-6 mt-2 mb-0">Filter Results: '.$_GET['category'].'</h4>';
+                } 
+
+            ?>
+            </div>
             <div class="row">
                 <?php
+
                 // Adjust SQL query based on the selected category
-                $category_filter = isset($_GET['name']) ? $_GET['name'] : '';
+                $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
                 // $sql = "SELECT p.product_id, p.name, p.description, p.price, p.image_url FROM products p";
                 $sql = "SELECT  p.product_id, p.name AS productname, p.description, p.gender, p.price, p.image_url, c.name AS categoryname FROM products p, categories c WHERE p.category_id=c.category_id";
                 if (!empty($category_filter)) {
