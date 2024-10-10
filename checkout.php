@@ -175,6 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                 <td>Product</td>
                 <td>Price</td>
                 <td>Quantity</td>
+                <td>Color</td>
+                <td>Size</td>
                 <td>Subtotal</td>
             </tr>
         </thead>
@@ -188,6 +190,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                         </td>
                         <td>&dollar;<?= $item['price'] ?></td>
                         <td><?= $item['quantity'] ?></td>
+                        <td><?= $item['color'] ?></td>
+                        <td><?= $item['size'] ?></td>
                         <td>&dollar;<?= $item['price'] * $item['quantity'] ?></td>
                     </tr>
                 <?php endforeach; ?>
