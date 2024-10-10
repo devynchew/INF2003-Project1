@@ -86,7 +86,7 @@ require_once 'session_config.php';
                         echo '<div class="card">';
                         echo '<img src="' . $row['image_url'] . '" class="card-img-top" alt="Product Image">';
                         echo '<div class="card-body">';
-                        echo '<h2 class="card-subtitle" style="font-size: 10px;"> (TEMP) ' . $row['gender'] . '</h2>';
+                        echo '<h2 class="card-subtitle" style="font-size: 12px; text-decoration:none;">' . $row['gender'] . '</h2>';
                         echo '<h2 class="card-title" style="font-size: 16px;">' . $row['productname'] . '</h2>';
                         echo '<p class="card-text">$' . $row['price'] . '</p>';
                         echo '<a href="product_details.php?id=' . $row['product_id'] . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
