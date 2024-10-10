@@ -40,24 +40,25 @@ require_once 'session_config.php';
                             <select class="form-control" id="category" name="category">
                                 <option value="">All Categories</option>
                                 <?php
-                                /*
+                                
                                     // Fetch distinct categories from the database
-                                    $sql_categories = "SELECT DISTINCT category FROM product";
+                                    $sql_categories = "SELECT DISTINCT name FROM categories";
                                     $result_categories = mysqli_query($connection, $sql_categories);
                                     if (mysqli_num_rows($result_categories) > 0) {
                                         while ($row_category = mysqli_fetch_assoc($result_categories)) {
-                                            echo '<option value="' . $row_category['category'] . '">' . $row_category['category'] . '</option>';
+                                            echo '<option value="' . $row_category['name'] . '">' . $row_category['name'] . '</option>';
                                         }
                                     }
-                                        */
+                                        
+                                    
                                 ?>
                             </select>
                         </div>
+                        
                     </form>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary" style="background-color: #0056b3; margin-bottom: 15px;">Apply Filter</button>
-
 
                 </div>
             </div>
@@ -65,12 +66,12 @@ require_once 'session_config.php';
             <div class="row">
                 <?php
                 // Adjust SQL query based on the selected category
-                //$category_filter = isset($_GET['category']) ? $_GET['category'] : '';
+                $category_filter = isset($_GET['name']) ? $_GET['name'] : '';
                 // $sql = "SELECT p.product_id, p.name, p.description, p.price, p.image_url FROM products p";
                 $sql = "SELECT  p.product_id, p.name AS productname, p.description, p.gender, p.price, p.image_url, c.name AS categoryname FROM products p, categories c WHERE p.category_id=c.category_id";
-                /*if (!empty($category_filter)) {
-                            $sql .= " WHERE category = '$category_filter'";
-                        }*/
+                if (!empty($category_filter)) {
+                            $sql .= " AND c.name = '$category_filter'";
+                        }
                 $result = mysqli_query($connection, $sql);
                 if (mysqli_num_rows($result) > 0) {
                     while ($row = mysqli_fetch_assoc($result)) {

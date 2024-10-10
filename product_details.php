@@ -48,7 +48,8 @@
         
             // Fetch product details from the database
             //$productSql = "SELECT productName, productInfo, productPrice, productImg FROM product WHERE productID = $productID";
-            $productSql = "SELECT name, description, price, image_url, category_id FROM products WHERE product_id = $productID";
+            // $productSql = "SELECT p.name AS productname, p.description AS productdesc, p.price, p.image_url, p.category_id, pc.color_id, c.name AS colorname, ps.size_id, s.name AS sizename FROM products p, productcolors pc, colors c, sizes s, productsizes ps WHERE p.product_id = $productID AND p.product_id=pc.product_id AND p.product_id=ps.product_id AND pc.color_id=c.color_id AND ps.size_id=s.size_id";
+            $productSql = "SELECT p.name AS productname, p.description AS productdesc, p.price, p.image_url, p.category_id FROM products p WHERE p.product_id = $productID";
             $productResult = mysqli_query($connection, $productSql);
 
             if (mysqli_num_rows($productResult) > 0) {
@@ -62,19 +63,55 @@
                 echo '<div class="col-md-6 product-details">';
                 // Display content
                 echo '<div id="display-content">';
-                echo '<h2>' . $productRow['name'] . '</h2>';
+
+                echo '<h2>' . $productRow['productname'] . '</h2>';
                 echo '<h3 class="price">Price: $' . $productRow['price'] . '</h3>';
-                echo '<p class="description">' . $productRow['description'] . '</p>';
-                echo '<h3>Product Details</h3>';
-                echo '<ul>';
-                //$productRow['feature1']
-                echo '<li>' . 'feature1 (you can put color here)' . '</li>';
-                echo '<li>' . 'feature2' . '</li>';
-                echo '<li>' . 'feature3' . '</li>';
-                echo '</ul>';
+                echo '<p class="description">' . $productRow['productdesc'] . '</p>';
+
                 echo '<div class="mt-3">'; // Adding margin-top for spacing
                 echo '<form action="cart.php" method="post">';
                 echo '<input type="hidden" name="product_id" value="' . $productID . '">';
+
+                ?>
+                <select class="form-control" id="colors" name="colors">
+                    <option value="">Colors</option>
+                    <?php
+                    
+                        // Fetch product colors from the database
+                        $sql_colors = "SELECT DISTINCT c.name AS colorname FROM colors c, productcolors pc, ordersproduct op WHERE op.product_id=$productID AND op.product_id=pc.product_id AND c.color_id=pc.color_id";
+                        $result_colors = mysqli_query($connection, $sql_colors);
+                        if (mysqli_num_rows($result_colors) > 0) {
+                            while ($row_colors = mysqli_fetch_assoc($result_colors)) {
+                                echo '<option value="' . $row_colors['colorname'] . '">' . $row_colors['colorname'] . '</option>';
+                            }
+                        }
+                            
+                        
+                        ?>
+                </select>
+                
+                <div class="mt-3"> 
+                <select class="form-control" id="sizes" name="sizes">
+                    <option value="">Sizes</option>
+                    <?php
+                    
+                        // Fetch product sizes from the database
+                        $sql_sizes = "SELECT DISTINCT s.name AS sizename FROM sizes s, productsizes ps, ordersproduct op WHERE op.product_id=$productID AND op.product_id=ps.product_id AND s.size_id=ps.size_id";
+                        $result_sizes = mysqli_query($connection, $sql_sizes);
+                        if (mysqli_num_rows($result_sizes) > 0) {
+                            while ($row_sizes = mysqli_fetch_assoc($result_sizes)) {
+                                echo '<option value="' . $row_sizes['sizename'] . '">' . $row_sizes['sizename'] . '</option>';
+                            }
+                        }
+                            
+                        
+                    ?>
+                </select>
+                <div class="mt-3"> 
+            <?php
+
+
+
                 echo '<label for="quantity">Quantity:</label>';
                 echo '<input type="number" name="quantity" class="form-control" id="quantity" value="1" min="1">';
                 echo '<button type="submit" class="btn btn-primary" style="margin-top: 10px;">Add to Cart</button>';
