@@ -35,27 +35,26 @@ require_once 'session_config.php';
             <div class="row mb-4">
                 <div class="col-md-6">
                     <form id="cat-filter" method="get" action="">
-                        <div class="form-group">
-                            <label for="category">Filter by Category:</label>
-                            <select class="form-control" id="category" name="category">
+                        <div class="form-group d-flex">
+                            <input type="search" name="search" id="search" class="form-control col-md-6" placeholder="Search.."/>
+                            <select class="form-control col-md-6 ml-2" id="category" name="category">
                                 <option value="">All Categories</option>
-
-                                <?php
                                 
-                                    // Fetch distinct categories from the database
-                                    $sql_categories = "SELECT DISTINCT name FROM categories";
-                                    $result_categories = mysqli_query($connection, $sql_categories);
-                                    if (mysqli_num_rows($result_categories) > 0) {
-                                        while ($row_category = mysqli_fetch_assoc($result_categories)) {
-                                            echo '<option value="' . $row_category['name'] . '">' . $row_category['name'] . '</option>';
-                                        }
+                                <?php
+                            
+                            // Fetch distinct categories from the database
+                                $sql_categories = "SELECT DISTINCT name FROM categories";
+                                $result_categories = mysqli_query($connection, $sql_categories);
+                                if (mysqli_num_rows($result_categories) > 0) {
+                                    while ($row_category = mysqli_fetch_assoc($result_categories)) {
+                                        echo '<option value="' . $row_category['name'] . '">' . $row_category['name'] . '</option>';
                                     }
-                                        
-                                    
+                                }
+                                
+                                
                                 ?>
                             </select>
                         </div>
-                        
                     </form>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
@@ -74,10 +73,14 @@ require_once 'session_config.php';
 
                 // Adjust SQL query based on the selected category
                 $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
+                $search_filter = isset($_GET['search']) ? $_GET['search'] : '';
                 // $sql = "SELECT p.product_id, p.name, p.description, p.price, p.image_url FROM products p";
                 $sql = "SELECT  p.product_id, p.name AS productname, p.description, p.gender, p.price, p.image_url, c.name AS categoryname FROM products p, categories c WHERE p.category_id=c.category_id";
                 if (!empty($category_filter)) {
                             $sql .= " AND c.name = '$category_filter'";
+                        }
+                if (!empty($search_filter)) {
+                            $sql .= " AND p.name LIKE '%$search_filter%'";
                         }
                 $result = mysqli_query($connection, $sql);
                 if (mysqli_num_rows($result) > 0) {
