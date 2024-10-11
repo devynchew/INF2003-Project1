@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <!-- Your Main CSS -->
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/main2.css">
     <!-- Custom JS -->
     <!--google fonts typogrpahy-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
