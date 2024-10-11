@@ -26,7 +26,7 @@
     }
     ?>
 
-    <main class="container">
+    <main class="manage_product_container">
         <h1 class="mt-2 mb-3">Products</h1>
         <div class="table_container">
             <table class="table">
