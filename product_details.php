@@ -8,7 +8,7 @@
     include "inc/nav.inc.php";
     ?>
     <?php
-
+    session_start();
     // Enable error reporting for debugging
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
@@ -20,15 +20,15 @@
 
     function displayProductAndReviews($connection)
     {
-        $user_id = 1; // Assuming user ID is 1 for now because idk how to get user id
+        $user_id = $_SESSION['user_id']; 
 
         // Check if product ID is set in the URL
-        if (isset($user_id) &&isset($_GET['id'])) {
+        if (isset($user_id )&&isset($_GET['id'])) { // to register clicks
             // Retrieve productID from URL parameter
             $productID = $_GET['id'];
-
+            //echo($user_id);
             // click count part, hardcode user to 1 first
-            $check_click_sql = "SELECT click_id, click_count FROM clicks WHERE user_id = 1 AND product_id = $productID";
+            $check_click_sql = "SELECT click_id, click_count FROM clicks WHERE user_id = $user_id AND product_id = $productID";
             $clickResult = mysqli_query($connection, $check_click_sql);
         
             if (mysqli_num_rows($clickResult) > 0) {
@@ -45,7 +45,8 @@
                 $insert_click_sql = "INSERT INTO clicks (user_id, product_id, click_count) VALUES ($user_id, $productID, 1)";
                 mysqli_query($connection, $insert_click_sql);
             }
-        
+        }
+        if (isset($_GET['id'])){ // fetch prod details if id is set
             // Fetch product details from the database
             //$productSql = "SELECT productName, productInfo, productPrice, productImg FROM product WHERE productID = $productID";
             // $productSql = "SELECT p.name AS productname, p.description AS productdesc, p.price, p.image_url, p.category_id, pc.color_id, c.name AS colorname, ps.size_id, s.name AS sizename FROM products p, productcolors pc, colors c, sizes s, productsizes ps WHERE p.product_id = $productID AND p.product_id=pc.product_id AND p.product_id=ps.product_id AND pc.color_id=c.color_id AND ps.size_id=s.size_id";
