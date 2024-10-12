@@ -31,7 +31,7 @@ require_once 'session_config.php';
         JOIN products p ON cl.product_id = p.product_id
         WHERE cl.user_id = $user_id
         GROUP BY p.category_id
-        ORDER BY COUNT(*) DESC
+        ORDER BY SUM(cl.click_count) DESC
         LIMIT 1";
         $category_result = $connection->query($category_query);
         return ($category_result->num_rows > 0) ? $category_result->fetch_assoc()['category_id'] : null;
@@ -77,10 +77,24 @@ require_once 'session_config.php';
         JOIN productcolors pc ON p.product_id = pc.product_id
         WHERE cl.user_id = $user_id
         GROUP BY pc.color_id
-        ORDER BY COUNT(*) DESC
+        ORDER BY SUM(cl.click_count) DESC
         LIMIT 1";
         $color_result = $connection->query($color_query);
         return ($color_result->num_rows > 0) ? $color_result->fetch_assoc()['color_id'] : null;
+    }
+
+    function getHighestClickedProd($connection, $user_id)
+    {
+        $prod_query = "
+        SELECT p.name
+        FROM clicks cl
+        JOIN products p ON cl.product_id = p.product_id
+        WHERE cl.user_id = $user_id
+        GROUP BY p.product_id
+        ORDER BY SUM(cl.click_count) DESC
+        LIMIT 1;";
+        $prod_result = $connection->query($prod_query);
+        return ($prod_result->num_rows > 0) ? $prod_result->fetch_assoc()['name'] : null;
     }
 
     // Function to display 3 products with a specified color
@@ -88,9 +102,10 @@ require_once 'session_config.php';
     {
         if ($color_id) {
             $color_products_query = "
-            SELECT p.product_id, p.product_name AS productname, p.price, p.product_image AS image_url, p.gender
+            SELECT p.product_id, p.name AS productname, p.price, image_url, p.gender
             FROM products p
-            WHERE p.color_id = $color_id
+            JOIN productcolors pc ON p.product_id = pc.product_id
+            WHERE pc.color_id = $color_id
             ORDER BY RAND()
             LIMIT 3";
             $color_products_result = $connection->query($color_products_query);
@@ -134,6 +149,7 @@ require_once 'session_config.php';
                 if ($row['user_has_clicks'] == 1) {
                     // User has clicked on products
                     echo '<h1 class="mt-5 mb-3">Recommended Products based on your history</h1>';
+                    echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">Based on your most clicked product: ' . getHighestClickedProd($connection, $user_id) . '</p>';
                     echo '<div class="row">';
                     $category_id = getHighestClickedCategory($connection, $user_id);
                     //echo 'catid: ', $category_id;
@@ -142,7 +158,7 @@ require_once 'session_config.php';
                     // Display products based on highest clicked color
                     $color_id = getHighestClickedColor($connection, $user_id);
                     //echo 'colorid: ', $color_id;
-                    //displayColorProducts($connection, $color_id);
+                    displayColorProducts($connection, $color_id);
                     echo '</div>';
                 } else {
                     // User has no clicks recorded
