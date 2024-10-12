@@ -14,7 +14,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT o.order_id, u.email, o.order_month, o.order_year, COUNT(p.quantity) AS quantity, o.total_amount
+$sql = "SELECT o.order_id, u.email, o.order_date, COUNT(p.quantity) AS quantity, o.total_amount
 FROM orders o
 JOIN users u ON o.user_id = u.user_id
 JOIN ordersproduct p ON o.order_id = p.order_id
@@ -68,7 +68,7 @@ $result = $conn->query($sql);
                         <tr>
                             <td><?= htmlspecialchars($row['order_id']) ?></td>
                             <td><?= htmlspecialchars($row['email']) ?></td>
-                            <td><?= htmlspecialchars($row['order_month']."/".$row['order_year']) ?></td>
+                            <td><?= date("F j, Y", strtotime($row['order_date'])) ?></td>
                             <td><?= htmlspecialchars($row['quantity']) ?></td>
                             <td><?= htmlspecialchars($row['total_amount']) ?></td>
                             <td>

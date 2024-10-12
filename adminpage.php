@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
 <?php
 session_start();
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
@@ -6,20 +10,11 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
 }
 ?>
 <?php
-        include "inc/head.inc.php";
-        include "inc/header.inc.php";
-        include "inc/nav.inc.php";
-      ?>
+    include "inc/head.inc.php";
+    include "inc/header.inc.php";
+    include "inc/nav.inc.php";
+?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <!-- Example of including Bootstrap for styling -->
-</head>
-<body>
 <div role="main" class="container mt-5">
     <h2>Admin Dashboard</h2>
     <div role="complementary" class="list-group mt-4">

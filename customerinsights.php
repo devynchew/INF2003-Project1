@@ -36,9 +36,19 @@ if (!$result) {
         include "inc/head.inc.php";
         include "inc/header.inc.php";
         include "inc/nav.inc.php";
+
+        // Sample PHP data
+        $data = [10, 20, 30, 40, 50];
+        $labels = ["January", "February", "March", "April", "May"];
+
+        // Convert data to JSON
+        $data_json = json_encode($data);
+        $labels_json = json_encode($labels);
     ?>
-        <div role="main" class="row justify-content-center">
-            <div class="col-md-10"> <!-- Adjusted for a maximum width -->
+
+
+    <div role="main" class="row justify-content-center">
+        <div class="col-md-10"> <!-- Adjusted for a maximum width -->
             <?php if (isset($_SESSION['successMsg'])): ?>
                 <div class="alert alert-success" role="alert">
                     <?= $_SESSION['successMsg'] ?>
@@ -53,50 +63,42 @@ if (!$result) {
             <?php endif; ?>
                 <h2 class="text-center">Customer Insights</h2> <!-- Centered Text -->
                 <div class="table-responsive"> <!-- Responsive table wrapper -->
-                    <table class="table table-bordered mx-auto"> <!-- Centered Table -->
-                        <thead>
-                            <tr>
-                                <th>Member ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <?php if ($isSuperAdmin): ?>
-                                    <th>Admin</th>
-                                <?php endif; ?>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while($row = $result->fetch_assoc()): ?>
-                                <tr>
-                                <td><?= htmlspecialchars($row['user_id']) ?></td>
-                                <td id="fname_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['fname']) ?></td>
-                                <td id="lname_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['lname']) ?></td>
-                                <td id="email_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['email']) ?></td>
-                                <?php if ($isSuperAdmin): ?>
-                                    <td id="is_admin_<?= $row['user_id'] ?>"><?= $row['is_admin'] ? 'Yes' : 'No' ?></td>
-                                <?php endif; ?>
-                                <td id="actions_<?= $row['user_id'] ?>">
-                                <button type="button" onclick="editRow(<?= $row['user_id'] ?>)" class="btn btn-primary">Edit</button>
-                                <form action="deleteuser.php" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline-block;">
-                                <input type="hidden" name="user_id" value="<?= htmlspecialchars($row['user_id']) ?>">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
-                                </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                    <div class="text-center">
+
+                    <canvas id="myChart" width="400" height="200"></canvas>
+
+                <div class="text-center">
             <a href="adminpage.php" class="btn btn-secondary mr-2">Back to Admin</a>
         </div>
-                </div>
-            </div>
-        </div>
+    </div>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',  // You can change the chart type to 'line', 'pie', 'doughnut', etc.
+            data: {
+                labels: <?php echo $labels_json; ?>,
+                datasets: [{
+                    label: 'My Dataset',
+                    data: <?php echo $data_json; ?>,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
     <?php
         // Close the database connection
         $conn->close();
     ?>
+    
 </body>
 </html>
 
