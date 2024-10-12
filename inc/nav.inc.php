@@ -23,6 +23,9 @@ require_once 'session_config.php';
                 <li class="nav-item">
                     <a class="nav-link" href="product.php">Products</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="recommendations.php">For You</a>
+                </li>
                 <!-- Show cart only if user is logged in -->
                 <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                     <li class="nav-item">
