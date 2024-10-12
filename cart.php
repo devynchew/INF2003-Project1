@@ -209,7 +209,7 @@ $title = "Cart Page";
                 </div>
             </form>
             <div class="buttons">
-                <a href="product.php" class="cart-back-btn">Back to Products</a>
+                <a href="product.php" class="cart-back-btn">Continue Shopping</a>
             </div>
         </div>
     </main>

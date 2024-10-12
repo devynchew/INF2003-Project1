@@ -1,7 +1,6 @@
 <?php
 ob_start(); // Start output buffering
 require_once 'session_config.php';
-echo '<pre>'; var_dump($_SESSION); echo '</pre>';
 
 // Check if the user is not logged in
 if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
@@ -79,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             $productPrice = $details['price'];
             $color = $details['color'];
             $size = $details['size'];
-            $totalPrice += $productPrice;
+            $totalPrice += $productPrice * $quantity;
             // $stmt = $conn->prepare("UPDATE product SET quantity = quantity - ? WHERE productID = ?");
             // $stmt->bind_param('ii', $quantity, $productID);
             // $stmt->execute();
@@ -89,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                 'productID' => $productID,
                 'quantity' => $quantity,
                 'productPrice' => $productPrice,
+                'totalPrice' => $totalPrice,
                 'color' => $color,
                 'size' => $size
             ];
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
         // Save the cart to the order summary before clearing the cart
         $_SESSION['order_summary'] = [
             'orderID' => $orderID, 
-            'subtotal' => $subtotal,
+            'totalPrice' => $totalPrice,
             'items' => $_SESSION['cart'],
             'firstName' => $firstName,  
             'lastName' => $lastName,   
@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                         <td>&dollar;<?= $item['price'] * $item['quantity'] ?></td>
                     </tr>
                 <?php
-                $subtotal += $item['price'];
+                $subtotal += $item['price'] * $item['quantity'];
                 endforeach; ?>
             <?php else : ?>
                 <tr>

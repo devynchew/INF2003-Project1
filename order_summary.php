@@ -11,7 +11,7 @@ if (!isset($_SESSION['order_summary'])) {
 // Retrieve order summary data from session
 $orderSummary = $_SESSION['order_summary'];
 $items = $orderSummary['items'];
-$subtotal = $orderSummary['subtotal'];
+$totalPrice = $orderSummary['totalPrice'];
 $orderID = $orderSummary['orderID'];
 $firstName = $orderSummary['firstName'];
 $lastName = $orderSummary['lastName'];
@@ -36,28 +36,27 @@ function getDatabaseConnection()
 $conn = getDatabaseConnection();
 
 // Fetch order details
-$stmt = $conn->prepare("SELECT * FROM orders WHERE orderID = ?");
+$stmt = $conn->prepare("SELECT * FROM orders WHERE order_id = ?");
 $stmt->bind_param('i', $orderID);
 $stmt->execute();
 $orderDetails = $stmt->get_result()->fetch_assoc();
 
-// Fetch payment details
-// Fetch order details
-$stmt = $conn->prepare("SELECT * FROM payment WHERE orderID = ?");
+
+$stmt = $conn->prepare("SELECT * FROM ordersproduct WHERE order_id = ?");
 $stmt->bind_param('i', $orderID);
 $stmt->execute();
-$paymentDetails = $stmt->get_result()->fetch_assoc();
+$ordersProductDetails = $stmt->get_result()->fetch_assoc();
 
 // Close the statement and connection
 $stmt->close();
 $conn->close();
 
 
-$addressParts = explode(',', $orderDetails['shippingAddress']);
+// $addressParts = explode(',', $orderDetails['shippingAddress']);
 
-$address = $addressParts[0] ?? '';
-$countryCode = $addressParts[1] ?? '';
-$zip = $addressParts[2] ?? '';
+// $address = $addressParts[0] ?? '';
+// $countryCode = $addressParts[1] ?? '';
+// $zip = $addressParts[2] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,7 +92,7 @@ $zip = $addressParts[2] ?? '';
                                 <div class="mb-3 d-flex justify-content-between">
                                     <h3 class="h3">Order Details</h3>
                                     <p>Order ID: &num;<?= htmlspecialchars($orderID) ?><br>
-                                        Order Date and Time: <?= htmlspecialchars($orderDetails['orderDate']) ?><br>
+                                        Order Date and Time: <?= htmlspecialchars($orderDetails['order_date']). ", " . $orderDetails['order_time'] ?><br>
                                 </div>
                                 <table class="table table-borderless">
                                     <thead>
@@ -119,33 +118,13 @@ $zip = $addressParts[2] ?? '';
                                     <tfoot>
                                         <tr>
                                             <td colspan="3">Total Paid</td>
-                                            <td>&dollar;<?= number_format($subtotal, 2) ?></td>
+                                            <td>&dollar;<?= number_format($totalPrice, 2) ?></td>
                                         </tr>
                                     </tfoot>
                                 </table>
                             </div>
                         </div>
-                        <!-- Payment -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <h3 class="h5">Payment Method</h3>
-                                        <p><?= htmlspecialchars($paymentDetails['paymentMethod']) ?><br>
-                                            Total: &dollar;<?= number_format($subtotal, 2) ?> <span class="badge bg-success rounded-pill">PAID</span></p>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <h3 class="h5">Billing address</h3>
-                                        <address>
-                                            <strong><?= htmlspecialchars($firstName) . ' ' . htmlspecialchars($lastName) ?></strong><br>
-                                            <?= htmlspecialchars($address) ?><br>
-                                            <?= htmlspecialchars($countryCode) ?>, <?= htmlspecialchars($zip) ?><br>
-                                            <p>Email: <?= htmlspecialchars($email) ?></p>
-                                        </address>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                     <div class="col-lg-4">
                         <!-- Message from the store -->
@@ -155,22 +134,10 @@ $zip = $addressParts[2] ?? '';
                                 <p>We hope that you enjoy your purchase. </p>
                             </div>
                         </div>
-                        <div class="card mb-4">
-                            <!-- Shipping information -->
-                            <div class="card-body">
-                                <h3 class="h5">Shipping Information</h3>
-                                <strong>Order status:</strong>
-                                <p><?= htmlspecialchars($orderDetails['orderStatus']) ?></p>
-                                <hr>
-                                <h3 class="h5">Address</h3>
-                                <address>
-                                    <strong><?= htmlspecialchars($firstName) . ' ' . htmlspecialchars($lastName) ?></strong><br>
-                                    <?= htmlspecialchars($address) ?><br>
-                                    <?= htmlspecialchars($countryCode) ?>, <?= htmlspecialchars($zip) ?><br>
-                                    <p>Email: <?= htmlspecialchars($email) ?></p>
-                                </address>
-                            </div>
+                        <div class="buttons">
+                            <a href="product.php" class="cart-back-btn">Back to Products</a>
                         </div>
+                        
                     </div>
                 </div>
             </div>
