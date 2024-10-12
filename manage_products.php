@@ -66,7 +66,7 @@
                 <tbody>
                     <?php
                     // Fetching products and their related categories, colors, and sizes
-                    $sql = "SELECT 
+                    $fetch_all_product_sql = "SELECT 
                                 p.product_id,
                                 p.image_url,
                                 p.name AS product_name,
@@ -76,7 +76,7 @@
                                 cat.name AS category,
                                 cat.category_id,
                                 GROUP_CONCAT(DISTINCT c.name ORDER BY c.name ASC SEPARATOR ', ') AS colors,
-                                GROUP_CONCAT(DISTINCT s.name ORDER BY s.name ASC SEPARATOR ', ') AS sizes
+                                GROUP_CONCAT(DISTINCT s.name ORDER BY FIELD(s.name, 'S', 'M', 'L', 'XL') SEPARATOR ', ') AS sizes
                             FROM products p
                             LEFT JOIN categories cat ON p.category_id = cat.category_id
                             LEFT JOIN productcolors pc ON p.product_id = pc.product_id
@@ -84,10 +84,10 @@
                             LEFT JOIN productsizes ps ON p.product_id = ps.product_id
                             LEFT JOIN sizes s ON ps.size_id = s.size_id
                             GROUP BY p.product_id";
-                    $result = mysqli_query($connection, $sql);
+                    $all_product_result = mysqli_query($connection, $fetch_all_product_sql);
 
-                    if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_assoc($result)) {
+                    if (mysqli_num_rows($all_product_result) > 0) {
+                        while ($row = mysqli_fetch_assoc(result: $all_product_result)) {
                             echo '<tr>';
                             echo '<td class="text-nowrap">' . $row['product_id'] . '</td>';
                             echo '<td class="text-nowrap"><img src="' . $row['image_url'] . '" alt="Product Image" style="max-width: 30px;"></td>';
@@ -99,7 +99,7 @@
                             echo '<td class="text-nowrap">' . $row['sizes'] . '</td>';
                             echo '<td class="text-nowrap">' . $row['gender'] . '</td>';
                             echo '<td class="text-nowrap">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" 
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateProductModal" 
                                     data-id="' . $row['product_id'] . '" 
                                     data-name="' . $row['product_name'] . '" 
                                     data-description="' . $row['description'] . '" 
@@ -121,11 +121,11 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Edit product</h5>
+                        <h5 class="modal-title" id="updateProductModalLabel">Edit product</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -134,17 +134,24 @@
                         <?php
                         // Fetch the current product details
                         $product_id = $row['product_id'];
-                        $sql = "SELECT * FROM products WHERE product_id = ?";
-                        $stmt = mysqli_prepare($connection, $sql);
+                        $fetch_single_product_sql = "SELECT * FROM products WHERE product_id = ?";
+                        $stmt = mysqli_prepare($connection, $fetch_single_product_sql);
                         mysqli_stmt_bind_param($stmt, "i", $product_id);
                         mysqli_stmt_execute($stmt);
                         $result = mysqli_stmt_get_result($stmt);
                         $product = mysqli_fetch_assoc($result);
-                        echo '<h3>$' . $product['category_id'] . '</h3>';
 
                         // Fetch the categories from the database
                         $categories_sql = "SELECT category_id, name FROM categories";
                         $categories_result = mysqli_query($connection, $categories_sql);
+
+                        // Fetch available colors from the database
+                        $colors_sql = "SELECT color_id, name FROM colors";
+                        $colors_result = mysqli_query($connection, $colors_sql);
+
+                        // Fetch available sizes from the database
+                        $available_sizes_sql = "SELECT size_id, name FROM sizes";
+                        $available_sizes_result = mysqli_query($connection, $available_sizes_sql);
                         ?>
                         <form id="editProductForm" method="post" action="process_update_product.php">
                             <input type="hidden" id="productId" name="productId">
@@ -178,11 +185,38 @@
                             </div>
                             <div class="form-group">
                                 <label for="productColors">Available Colors</label>
-                                <input type="text" class="form-control" id="productColors" name="productColors" required>
+                                <div id="productColors">
+                                    <?php
+                                    if (mysqli_num_rows($colors_result) > 0) {
+                                        while ($color = mysqli_fetch_assoc($colors_result)) {
+                                            echo "<div class='form-check'>
+                        <input class='form-check-input' type='checkbox' name='productColors[]' value='" . $color['color_id'] . "' id='color_" . $color['color_id'] . "'>
+                        <label class='form-check-label' for='color_" . $color['color_id'] . "'>" . $color['name'] . "</label>
+                      </div>";
+                                        }
+                                    } else {
+                                        echo "<p>No colors available</p>";
+                                    }
+                                    ?>
+                                </div>
                             </div>
+                            <!-- Product Sizes (Checkboxes) -->
                             <div class="form-group">
                                 <label for="productSizes">Available Sizes</label>
-                                <input type="text" class="form-control" id="productSizes" name="productSizes" required>
+                                <div id="productSizes">
+                                    <?php
+                                    if (mysqli_num_rows($available_sizes_result) > 0) {
+                                        while ($size = mysqli_fetch_assoc($available_sizes_result)) {
+                                            echo "<div class='form-check'>
+                                                <input class='form-check-input' type='checkbox' name='productSizes[]' value='" . $size['size_id'] . "' id='size_" . $size['size_id'] . "'>
+                                                <label class='form-check-label' for='size_" . $size['size_id'] . "'>" . $size['name'] . "</label>
+                                              </div>";
+                                        }
+                                    } else {
+                                        echo "No sizes available";
+                                    }
+                                    ?>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="productGender">Gender</label>
@@ -207,7 +241,7 @@
     include "inc/footer.inc.php";
     ?>
     <script>
-        $('#exampleModal').on('show.bs.modal', function(event) {
+        $('#updateProductModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Button that triggered the modal
             var productId = button.data('id');
             var productName = button.data('name');
@@ -223,10 +257,20 @@
             $('#productName').val(productName);
             $('#productDescription').val(productDescription);
             $('#productPrice').val(productPrice);
-            $('#productColors').val(productColors);
-            $('#productSizes').val(productSizes);
             $('#productGender').val(productGender);
-            $('#product_category').val(categoryId); // Set the category in the dropdown
+            $('#product_category').val(categoryId);
+
+            // Pre-check the color checkboxes based on the selected colors
+            var selectedColors = productColors.split(', ');
+            $('input[name="productColors[]"]').each(function() {
+                $(this).prop('checked', selectedColors.includes($(this).next('label').text()));
+            });
+
+            // Pre-check the size checkboxes based on the selected sizes
+            var selectedSizes = productSizes.split(', ');
+            $('input[name="productSizes[]"]').each(function() {
+                $(this).prop('checked', selectedSizes.includes($(this).next('label').text()));
+            });
         });
     </script>
 </body>

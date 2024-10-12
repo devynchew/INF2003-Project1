@@ -17,15 +17,15 @@ if (!$connection) {
 // Check if the form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get product details from POST request
-    $product_id = mysqli_real_escape_string($connection, $_POST['productId']);
-    $product_name = mysqli_real_escape_string($connection, $_POST['productName']);
-    $product_description = mysqli_real_escape_string($connection, $_POST['productDescription']);
-    $product_price = mysqli_real_escape_string($connection, $_POST['productPrice']);
+    $product_id = $_POST['productId'];
+    $product_name = $_POST['productName'];
+    $product_description = $_POST['productDescription'];
+    $product_price = $_POST['productPrice'];
     $product_category = $_POST['product_category'];
-    $product_colors = explode(", ", mysqli_real_escape_string($connection, $_POST['productColors']));
-    $product_sizes = explode(", ", mysqli_real_escape_string($connection, $_POST['productSizes']));
-    $product_gender = mysqli_real_escape_string($connection, $_POST['productGender']);
-    
+    $product_colors = isset($_POST['productColors']) ? $_POST['productColors'] : [];
+    $product_sizes = isset($_POST['productSizes']) ? $_POST['productSizes'] : [];
+    $product_gender = $_POST['productGender'];
+
     // Start transaction
     mysqli_begin_transaction($connection);
 
@@ -37,38 +37,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = mysqli_prepare($connection, $update_product_sql);
         mysqli_stmt_bind_param($stmt, 'ssdsdi', $product_name, $product_description, $product_price, $product_gender, $product_category, $product_id);
         mysqli_stmt_execute($stmt);
-        
-        // Update the `productcolors` table
-        // First, delete existing entries for this product in `productcolors`
-        // $delete_colors_sql = "DELETE FROM productcolors WHERE product_id = ?";
-        // $stmt = mysqli_prepare($connection, $delete_colors_sql);
-        // mysqli_stmt_bind_param($stmt, 'i', $product_id);
-        // mysqli_stmt_execute($stmt);
 
-        // Insert new colors
-        // foreach ($product_colors as $color) {
-        //     $insert_color_sql = "INSERT INTO productcolors (product_id, color_id) 
-        //                          VALUES (?, (SELECT color_id FROM colors WHERE name = ? LIMIT 1))";
-        //     $stmt = mysqli_prepare($connection, $insert_color_sql);
-        //     mysqli_stmt_bind_param($stmt, 'is', $product_id, $color);
-        //     mysqli_stmt_execute($stmt);
-        // }
+        // Delete existing colors for this product
+        $delete_colors_sql = "DELETE FROM productcolors WHERE product_id = ?";
+        $stmt = mysqli_prepare($connection, $delete_colors_sql);
+        mysqli_stmt_bind_param($stmt, 'i', $product_id);
+        mysqli_stmt_execute($stmt);
 
-        // Update the `productsizes` table
-        // First, delete existing entries for this product in `productsizes`
-        // $delete_sizes_sql = "DELETE FROM productsizes WHERE product_id = ?";
-        // $stmt = mysqli_prepare($connection, $delete_sizes_sql);
-        // mysqli_stmt_bind_param($stmt, 'i', $product_id);
-        // mysqli_stmt_execute($stmt);
+        // Insert the new colors for the product
+        if (!empty($product_colors)) {
+            $insert_colors_sql = "INSERT INTO productcolors (product_id, color_id) VALUES (?, ?)";
+            $stmt = mysqli_prepare($connection, $insert_colors_sql);
 
-        // Insert new sizes
-        // foreach ($product_sizes as $size) {
-        //     $insert_size_sql = "INSERT INTO productsizes (product_id, size_id) 
-        //                         VALUES (?, (SELECT size_id FROM sizes WHERE name = ? LIMIT 1))";
-        //     $stmt = mysqli_prepare($connection, $insert_size_sql);
-        //     mysqli_stmt_bind_param($stmt, 'is', $product_id, $size);
-        //     mysqli_stmt_execute($stmt);
-        // }
+            foreach ($product_colors as $color_id) {
+                mysqli_stmt_bind_param($stmt, 'ii', $product_id, $color_id);
+                mysqli_stmt_execute($stmt);
+            }
+        }
+
+         // Remove all current sizes for the product
+         $delete_sizes_sql = "DELETE FROM productsizes WHERE product_id = ?";
+         $stmt = mysqli_prepare($connection, $delete_sizes_sql);
+         mysqli_stmt_bind_param($stmt, 'i', $product_id);
+         mysqli_stmt_execute($stmt);
+ 
+         // Insert the new colors for the product
+        if (!empty($product_sizes)) {
+            $insert_sizes_sql = "INSERT INTO productsizes (product_id, size_id) VALUES (?, ?)";
+            $stmt = mysqli_prepare($connection, $insert_sizes_sql);
+
+            foreach ($product_sizes as $size_id) {
+                mysqli_stmt_bind_param($stmt, 'ii', $product_id, $size_id);
+                mysqli_stmt_execute($stmt);
+            }
+        }
 
         // Commit the transaction
         mysqli_commit($connection);
@@ -76,7 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Redirect back to the products page with a success message
         header("Location: manage_products.php?status=success");
         exit();
-        
     } catch (Exception $e) {
         // Rollback the transaction if something goes wrong
         mysqli_rollback($connection);
@@ -85,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: manage_products.php?status=error");
         exit();
     }
-    
 } else {
     // If the request method is not POST, redirect back to the products page
     header("Location: manage_products.php");
@@ -94,4 +94,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Close the connection
 mysqli_close($connection);
-?>
