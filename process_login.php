@@ -90,6 +90,7 @@ function authenticateUser($email, $pwd)
         $user_id = $row["user_id"];
         $fname = $row["fname"];
         $lname = $row["lname"];
+        $address = $row["address"];
         if ($pwd === $row["password"]) {
             // Password matches, authentication successful
             $success = true;
@@ -99,6 +100,7 @@ function authenticateUser($email, $pwd)
             $_SESSION['fname'] = $fname;
             $_SESSION['lname'] = $lname;
             $_SESSION['email'] = $email;
+            $_SESSION['address'] = $address;
             $_SESSION['is_admin'] = $row["is_admin"];
             echo 'success login, session set';
         } else {

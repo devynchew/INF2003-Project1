@@ -1,6 +1,7 @@
 <?php
 ob_start(); // Start output buffering
 require_once 'session_config.php';
+echo '<pre>'; var_dump($_SESSION); echo '</pre>';
 
 // Check if the user is not logged in
 if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
@@ -47,36 +48,6 @@ $conn = getDatabaseConnection();
 $subtotal = 0;
 $products_in_cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 
-if (!empty($products_in_cart)) {
-    $product_ids = array_keys($products_in_cart);
-    $placeholders = implode(',', array_fill(0, count($product_ids), '?'));
-    $stmt = $conn->prepare("SELECT product_id, name, price, image_url FROM products WHERE product_id IN ($placeholders)");
-    $stmt->bind_param(str_repeat('i', count($product_ids)), ...$product_ids);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $products = $result->fetch_all(MYSQLI_ASSOC);
-
-    foreach ($products as $product) {
-        $productID = $product['product_id'];
-        $quantity = $products_in_cart[$productID]['quantity'];
-        $price = $product['price'];
-        $total = $price * $quantity;
-        $subtotal += $total;
-        $products_in_cart[$productID]['name'] = $product['name'];
-        $products_in_cart[$productID]['img'] = $product['image_url'];
-
-        // Update session cart with all details including name and img
-        $_SESSION['cart'][$productID] = [
-            'name' => $product['name'],
-            'img' => $product['image_url'],
-            'price' => $price,
-            'quantity' => $quantity,
-            'total' => $total
-        ];
-    }
-}
-
-
 // Checkout logic
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty($_SESSION['cart'])) {
     // Get user input from the form
@@ -89,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
     $zip = $_POST['zip'] ?? '';
 
     // Retrieve member_id from session
-    $member_id = $_SESSION['member_id'] ?? null;
-    if (is_null($member_id)) {
-        die('Member ID is not set. User must be logged in to checkout.');
+    $user_id = $_SESSION['user_id'] ?? null;
+    if (is_null($user_id)) {
+        die('Please Log In.');
     }
 
     // Combine address components
@@ -106,7 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
         foreach ($_SESSION['cart'] as $productID => $details) {
             $quantity = $details['quantity'];
             $productPrice = $details['price'];
-
+            $color = $details['color'];
+            $size = $details['size'];
+            $totalPrice += $productPrice;
             // $stmt = $conn->prepare("UPDATE product SET quantity = quantity - ? WHERE productID = ?");
             // $stmt->bind_param('ii', $quantity, $productID);
             // $stmt->execute();
@@ -115,29 +88,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             $cart_details[] = [
                 'productID' => $productID,
                 'quantity' => $quantity,
-                'productPrice' => $productPrice
+                'productPrice' => $productPrice,
+                'color' => $color,
+                'size' => $size
             ];
         }
 
-        // Insert into orders table with shipping address
-        $stmt = $conn->prepare("INSERT INTO orders (member_id, totalPrice, orderStatus, orderDate, shippingAddress) VALUES (?, ?, 'Pending', NOW(), ?)");
-        $stmt->bind_param('ids', $member_id, $subtotal, $fullAddress);
-        $stmt->execute();
-        $orderID = $conn->insert_id;
-        $stmt->close();
-
-
-        // Insert payment method into the payment table
-        $stmt = $conn->prepare("INSERT INTO payment (orderID, amount, paymentDate, paymentMethod) VALUES (?, ?, NOW(), ?)");
-        $stmt->bind_param('ids', $orderID, $subtotal, $paymentMethod);
+        // Insert into orders table 
+        $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, order_date, order_time) VALUES (?, ?, CURDATE(), CURTIME())");
+        $stmt->bind_param('id', $user_id, $totalPrice);
         $stmt->execute();
         $stmt->close();
 
         $conn->commit();
 
+        $sql_order = "SELECT MAX(order_id) as order_id from orders";
+        $result_order = mysqli_query($conn, $sql_order);
+        if (mysqli_num_rows($result_order) > 0) {
+            while ($row_order = mysqli_fetch_assoc($result_order)) {
+                $orderID = $row_order['order_id'];
+            }
+        }
+        
         foreach ($cart_details as $item) {
-            $stmt = $conn->prepare("INSERT INTO order_items (orderID, productID, quantity, productPrice) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param('iiid', $orderID, $item['productID'], $item['quantity'], $item['productPrice']);
+            $sql_get_ids = "SELECT c.color_id, s.size_id from colors c, sizes s where c.name='$color' AND s.name='$size'";
+            $result_ids = mysqli_query($conn, $sql_get_ids);
+            if (mysqli_num_rows($result_ids) > 0) {
+                while ($row_ids = mysqli_fetch_assoc($result_ids)) {
+                    $colorID = $row_ids['color_id'];
+                    $sizeID = $row_ids['size_id'];
+                }
+            }
+
+            $stmt = $conn->prepare("INSERT INTO ordersproduct (order_id, product_id, color_id, size_id, quantity)
+            VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param('iiiii', $orderID, $item['productID'], $colorID, $sizeID, $quantity);
             $stmt->execute();
             $stmt->close();
         }
@@ -194,7 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                         <td><?= $item['size'] ?></td>
                         <td>&dollar;<?= $item['price'] * $item['quantity'] ?></td>
                     </tr>
-                <?php endforeach; ?>
+                <?php
+                $subtotal += $item['price'];
+                endforeach; ?>
             <?php else : ?>
                 <tr>
                     <td colspan="4" style="text-align:center;">You have no products added to checkout.</td>
@@ -228,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                     </div>
                     <div class="col-md-12 mb-3">
                         <label for="address">Address</label>
-                        <input type="text" class="form-control" name="address" id="address" placeholder="1234 Main St" required>
+                        <input type="text" class="form-control" name="address" id="address" value="<?php echo isset($_SESSION['address']) ? htmlspecialchars($_SESSION['address']) : ''; ?>" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
