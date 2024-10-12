@@ -119,13 +119,14 @@ require_once 'session_config.php';
     ?>
     <main>
         <div class="container">
-            <?php 
+            <?php
+            if ($user_id) {
                 $check_clicks_query = "
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM clicks
-                    WHERE user_id = $user_id
-                ) AS user_has_clicks";
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM clicks
+                        WHERE user_id = $user_id
+                    ) AS user_has_clicks";
                 $result = $connection->query($check_clicks_query);
                 $row = $result->fetch_assoc();
                 if ($row['user_has_clicks'] == 1) {
@@ -134,7 +135,7 @@ require_once 'session_config.php';
                     echo '<div class="row">';
                     $category_id = getHighestClickedCategory($conn, $user_id);
                     displayCategoryProducts($conn, $category_id);
-    
+
                     // Display products based on highest clicked color
                     $color_id = getHighestClickedColor($conn, $user_id);
                     displayColorProducts($conn, $color_id);
@@ -144,6 +145,11 @@ require_once 'session_config.php';
                     echo '<h1 class="mt-5 mb-3">No recommended products yet, go browse our store!</h1>';
                     echo '<a href="index.php" class="btn btn-primary mt-3">Go to Home Page</a>';
                 }
+            } else {
+                echo '<h1 class="mt-5 mb-3">Login to view recommendations!</h1>';
+                echo '<a href="index.php" class="btn btn-primary mt-3">Go to Home Page</a>';
+            }
+
             ?>
         </div>
     </main>
