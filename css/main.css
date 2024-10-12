@@ -1132,3 +1132,17 @@ figcaption {
 .product_table > thead{
   height: 48px;
 }
+
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  grid-gap: 20px; 
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  min-height: 300px;
+  height: 100%; 
+}
