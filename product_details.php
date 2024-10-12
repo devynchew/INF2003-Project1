@@ -84,7 +84,8 @@
                     <?php
                     
                         // Fetch product colors from the database
-                        $sql_colors = "SELECT DISTINCT c.name AS colorname FROM colors c, productcolors pc, ordersproduct op WHERE op.product_id=$productID AND op.product_id=pc.product_id AND c.color_id=pc.color_id";
+                        // $sql_colors = "SELECT DISTINCT c.name AS colorname FROM colors c, productcolors pc, ordersproduct op WHERE op.product_id=$productID AND op.product_id=pc.product_id AND c.color_id=pc.color_id";
+                        $sql_colors = "SELECT DISTINCT c.name AS colorname FROM colors c JOIN productcolors p ON c.color_id = p.color_id WHERE p.product_id=$productID";
                         $result_colors = mysqli_query($connection, $sql_colors);
                         if (mysqli_num_rows($result_colors) > 0) {
                             while ($row_colors = mysqli_fetch_assoc($result_colors)) {
@@ -102,7 +103,8 @@
                     <?php
                     
                         // Fetch product sizes from the database
-                        $sql_sizes = "SELECT DISTINCT s.name AS sizename FROM sizes s, productsizes ps, ordersproduct op WHERE op.product_id=$productID AND op.product_id=ps.product_id AND s.size_id=ps.size_id";
+                        // $sql_sizes = "SELECT DISTINCT s.name AS sizename FROM sizes s, productsizes ps, ordersproduct op WHERE op.product_id=$productID AND op.product_id=ps.product_id AND s.size_id=ps.size_id";
+                        $sql_sizes = "SELECT DISTINCT s.name AS sizename FROM sizes s JOIN productsizes p ON s.size_id = p.size_id WHERE p.product_id=$productID";
                         $result_sizes = mysqli_query($connection, $sql_sizes);
                         if (mysqli_num_rows($result_sizes) > 0) {
                             while ($row_sizes = mysqli_fetch_assoc($result_sizes)) {
