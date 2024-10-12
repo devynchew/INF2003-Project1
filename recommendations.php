@@ -147,7 +147,7 @@ require_once 'session_config.php';
                 }
             } else {
                 echo '<h1 class="mt-5 mb-3">Login to view recommendations!</h1>';
-                echo '<a href="index.php" class="btn btn-primary mt-3">Go to Home Page</a>';
+                echo '<a href="login.php" class="btn btn-primary mt-3">Login</a>';
             }
 
             ?>
