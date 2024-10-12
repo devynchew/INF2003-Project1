@@ -43,8 +43,8 @@ require_once 'session_config.php';
         if ($category_id) {
             $category_products_query = "
             SELECT p.product_id, 
-            p.product_name AS productname, 
-            p.price, p.product_image AS image_url, p.gender
+            p.name AS productname, 
+            p.price, p.image_url, p.gender
             FROM products p
             WHERE p.category_id = $category_id
             ORDER BY RAND()
@@ -71,11 +71,12 @@ require_once 'session_config.php';
     function getHighestClickedColor($connection, $user_id)
     {
         $color_query = "
-        SELECT p.color_id
+        SELECT pc.color_id
         FROM clicks cl
         JOIN products p ON cl.product_id = p.product_id
+        JOIN productcolors pc ON p.product_id = pc.product_id
         WHERE cl.user_id = $user_id
-        GROUP BY p.color_id
+        GROUP BY pc.color_id
         ORDER BY COUNT(*) DESC
         LIMIT 1";
         $color_result = $connection->query($color_query);
@@ -120,6 +121,7 @@ require_once 'session_config.php';
     <main>
         <div class="container">
             <?php
+            $user_id = isset($_SESSION['user_id']);
             if ($user_id) {
                 $check_clicks_query = "
                     SELECT EXISTS (
@@ -133,12 +135,14 @@ require_once 'session_config.php';
                     // User has clicked on products
                     echo '<h1 class="mt-5 mb-3">Recommended Products based on your history</h1>';
                     echo '<div class="row">';
-                    $category_id = getHighestClickedCategory($conn, $user_id);
-                    displayCategoryProducts($conn, $category_id);
-
+                    $category_id = getHighestClickedCategory($connection, $user_id);
+                    //echo 'catid: ', $category_id;
+                    displayCategoryProducts($connection, $category_id);
+            
                     // Display products based on highest clicked color
-                    $color_id = getHighestClickedColor($conn, $user_id);
-                    displayColorProducts($conn, $color_id);
+                    $color_id = getHighestClickedColor($connection, $user_id);
+                    //echo 'colorid: ', $color_id;
+                    //displayColorProducts($connection, $color_id);
                     echo '</div>';
                 } else {
                     // User has no clicks recorded
