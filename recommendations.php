@@ -76,6 +76,34 @@ require_once 'session_config.php';
             $displayed_product_ids = [];
             $user_id = isset($_SESSION['user_id']);
             // Function to get the highest clicked category ID for a user
+            function getHighestClickedCategoryAndColor($connection, $user_id)
+            {
+                $query = "
+                    SELECT 
+                    p.category_id,
+                    pc.color_id
+                    FROM clicks cl
+                    JOIN products p ON cl.product_id = p.product_id
+                    JOIN productcolors pc ON p.product_id = pc.product_id
+                    WHERE cl.user_id = $user_id
+                    GROUP BY p.category_id, pc.color_id
+                    ORDER BY SUM(cl.click_count) DESC
+                    LIMIT 1;
+                ";
+                $result = $connection->query($query);
+                if (!$result) {
+                    // Return error message if query fails
+                    return "Error: " . $connection->error;
+                }
+                // Return both category and color if results are found
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    return [$row['category_id'], $row['color_id']];
+                } else {
+                    return [null, null];
+                }
+            }
+            /*
             function getHighestClickedCategory($connection, $user_id)
             {
                 $category_query = "
@@ -89,7 +117,7 @@ require_once 'session_config.php';
                 $category_result = $connection->query($category_query);
                 return ($category_result->num_rows > 0) ? $category_result->fetch_assoc()['category_id'] : null;
             }
-
+            */
             // Function to display 3 products from a specified category
             function displayCategoryProducts($connection, $category_id)
             {
@@ -121,7 +149,7 @@ require_once 'session_config.php';
                 }
                 return $displayed_product_ids;
             }
-
+            /*
             // Function to get the highest clicked color ID for a user
             function getHighestClickedColor($connection, $user_id, $displayed_product_ids)
             {
@@ -137,7 +165,7 @@ require_once 'session_config.php';
                 $color_result = $connection->query($color_query);
                 return ($color_result->num_rows > 0) ? $color_result->fetch_assoc()['color_id'] : null;
             }
-
+*/
             function getHighestClickedProd($connection, $user_id)
             {
                 $prod_query = "
@@ -200,14 +228,11 @@ require_once 'session_config.php';
                     <span class="tooltip2">most clicked product:
                     <span class="tooltiptext">' . $mostClickedProd . '</span></span></p>';
                     echo '<div class="row">';
-                    $category_id = getHighestClickedCategory($connection, $user_id);
+                    [$category_id, $color_id] = getHighestClickedCategoryAndColor($connection, $user_id);
                     //echo 'catid: ', $category_id;
                     $displayed_product_ids = displayCategoryProducts($connection, $category_id);
-
-                    // Display products based on highest clicked color
-                    $color_id = getHighestClickedColor($connection, $user_id, $displayed_product_ids);
                     //echo 'colorid: ', $color_id;
-                     echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">You might also like: </p>';
+                    echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">You might also like: </p>';
                     displayColorProducts($connection, $color_id, $displayed_product_ids);
                     echo '</div>';
                 } else {

@@ -80,7 +80,7 @@ function authenticateUser($email, $pwd)
     }
 
     // Prepare and execute the statement
-    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, is_admin FROM users WHERE email=?");
+    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, is_admin FROM users WHERE email=? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
