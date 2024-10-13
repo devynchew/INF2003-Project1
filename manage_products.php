@@ -40,13 +40,24 @@
             </div>
         <?php elseif (isset($_GET['status']) && $_GET['status'] == 'error'): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error!</strong> Failed to update the product. Please try again.
+                <strong>Error!</strong> Failed, Please try again.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <?php elseif (isset($_GET['status']) && $_GET['status'] == 'deleted'): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                Product deleted successfully.
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         <?php endif; ?>
         <h1 class="mt-2 mb-3">Products</h1>
+        <!-- Button to Open Modal for Adding a New Product -->
+        <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addProductModal">
+            Add New Product
+        </button>
         <div class="table_container">
             <table class="table product_table">
                 <thead>
@@ -60,6 +71,7 @@
                         <th scope="col" class="text-nowrap">Available Colors</th>
                         <th scope="col" class="text-nowrap">Available Sizes</th>
                         <th scope="col" class="text-nowrap">Gender</th>
+                        <th scope="col" class="text-nowrap"></th>
                         <th scope="col" class="text-nowrap"></th>
                     </tr>
                 </thead>
@@ -99,7 +111,7 @@
                             echo '<td class="text-nowrap">' . $row['sizes'] . '</td>';
                             echo '<td class="text-nowrap">' . $row['gender'] . '</td>';
                             echo '<td class="text-nowrap">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateProductModal" 
+                                    <button type="button" class="btn btn-primary update-product-btn" data-toggle="modal" data-target="#updateProductModal" 
                                     data-id="' . $row['product_id'] . '" 
                                     data-name="' . $row['product_name'] . '" 
                                     data-description="' . $row['description'] . '" 
@@ -110,6 +122,11 @@
                                     data-category-id="' . $row['category_id'] . '">Edit
                                     </button>
                                 </td>';
+                            // Add delete button
+                            echo "<td><form method='POST' action='process_delete_product.php' style='display:inline;'>";
+                            echo "<input type='hidden' name='product_id' value='" . $row['product_id'] . "'>";
+                            echo "<button type='submit' class='btn btn-danger'>Delete</button>";
+                            echo "</form></td>";
                             echo '</tr>';
                         }
                     } else {
@@ -120,7 +137,7 @@
             </table>
         </div>
 
-        <!-- Modal -->
+        <!-- Edit Product Modal -->
         <div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -231,6 +248,104 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" form="editProductForm">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Add New Product Modal -->
+        <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addProductForm" method="post" action="process_add_product.php">
+                            <div class="form-group">
+                                <label for="newProductName">Product Name</label>
+                                <input type="text" class="form-control" id="newProductName" name="newProductName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductDescription">Description</label>
+                                <textarea class="form-control" id="newProductDescription" name="newProductDescription" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductPrice">Price</label>
+                                <input type="number" step="0.01" class="form-control" id="newProductPrice" name="newProductPrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductCategory">Category</label>
+                                <select class="form-control" id="newProductCategory" name="newProductCategory" required>
+                                    <?php
+                                    $categories_sql = "SELECT category_id, name FROM categories";
+                                    $categories_result = mysqli_query($connection, $categories_sql);
+
+                                    if (mysqli_num_rows($categories_result) > 0) {
+                                        while ($category = mysqli_fetch_assoc($categories_result)) {
+                                            echo "<option value='" . $category['category_id'] . "'>" . $category['name'] . "</option>";
+                                        }
+                                    } else {
+                                        echo "<option value=''>No categories available</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductColors">Available Colors</label>
+                                <div id="newProductColors">
+                                    <?php
+                                    $colors_sql = "SELECT color_id, name FROM colors";
+                                    $colors_result = mysqli_query($connection, $colors_sql);
+
+                                    if (mysqli_num_rows($colors_result) > 0) {
+                                        while ($color = mysqli_fetch_assoc($colors_result)) {
+                                            echo "<div class='form-check'>
+                        <input class='form-check-input' type='checkbox' name='newProductColors[]' value='" . $color['color_id'] . "' id='newColor_" . $color['color_id'] . "'>
+                        <label class='form-check-label' for='newColor_" . $color['color_id'] . "'>" . $color['name'] . "</label>
+                      </div>";
+                                        }
+                                    } else {
+                                        echo "<p>No colors available</p>";
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductSizes">Available Sizes</label>
+                                <div id="newProductSizes">
+                                    <?php
+                                    $sizes_sql = "SELECT size_id, name FROM sizes";
+                                    $sizes_result = mysqli_query($connection, $sizes_sql);
+
+                                    if (mysqli_num_rows($sizes_result) > 0) {
+                                        while ($size = mysqli_fetch_assoc($sizes_result)) {
+                                            echo "<div class='form-check'>
+                        <input class='form-check-input' type='checkbox' name='newProductSizes[]' value='" . $size['size_id'] . "' id='newSize_" . $size['size_id'] . "'>
+                        <label class='form-check-label' for='newSize_" . $size['size_id'] . "'>" . $size['name'] . "</label>
+                      </div>";
+                                        }
+                                    } else {
+                                        echo "<p>No sizes available</p>";
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductGender">Gender</label>
+                                <select class="form-control" id="newProductGender" name="newProductGender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Unisex">Unisex</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="addProductForm">Add Product</button>
                     </div>
                 </div>
             </div>

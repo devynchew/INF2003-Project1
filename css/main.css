@@ -743,6 +743,11 @@ section[aria-labelledby="carouselHeading"] {
   /* Replace #yourLinkColor with your desired color */
 }
 
+/* If you want to change the text color of the navbar links */
+.navbar .navbar-nav .nav-link:hover {
+  opacity: 0.9;
+}
+
 /* For changing the color of the navbar brand */
 .navbar .navbar-brand {
   color: #fdfbfb !important;
@@ -1136,6 +1141,12 @@ figcaption {
 canvas#popularColorsChart {
   max-height: 500px;
 }
+
+button.update-product-btn:hover {
+  opacity: 0.9;
+}
+
+/* --- */
 
 .charts-container {
   display: grid;
