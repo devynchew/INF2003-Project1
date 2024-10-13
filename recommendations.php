@@ -154,7 +154,6 @@ require_once 'session_config.php';
             {
                 if ($color_id) {
                     $excluded_ids = implode(',', $displayed_product_ids) ?: '';
-                    //echo 'excluded ids: ', $excluded_ids;
                     $color_products_query = "
                     SELECT p.product_id, p.name AS productname, p.price, image_url, p.gender
                     FROM products p
@@ -198,9 +197,7 @@ require_once 'session_config.php';
                     <span class="tooltiptext">' . $mostClickedProd . '</span></span></p>';
                     echo '<div class="row">';
                     [$category_id, $color_id] = getHighestClickedCategoryAndColor($connection, $user_id);
-                    //echo 'catid: ', $category_id;
                     $displayed_product_ids = displayCategoryProducts($connection, $category_id);
-                    //echo 'colorid: ', $color_id;
                     echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">You might also like: </p>';
                     displayColorProducts($connection, $color_id, $displayed_product_ids);
                     echo '</div>';
