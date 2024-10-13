@@ -94,13 +94,12 @@ $errorMsg = false;
                                         {
                                             while ($row = $result->fetch_assoc())
                                             {
-                                                $date = date("Y-m-d",strtotime($row["orderDate"]));
+                                                $date = date("Y-m-d",strtotime($row["order_date"]));
 
                                                 echo "<tr style='padding-top: 10px;'>";
                                                 echo "<td><a href='orderdetails.php?order_id=".$row["order_id"]."'>".$row["order_id"]."</a></td>";
-                                                echo "<td>".$row["order_month"]."/".$row["order_year"]."</td>";
-                                                echo "<td>".$row["total_amount"]."</td>";
                                                 echo "<td>".$date."</td>";
+                                                echo "<td>".$row["total_amount"]."</td>";
                                                 echo "</tr>";
                                             }
                                         }
