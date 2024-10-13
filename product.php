@@ -74,7 +74,7 @@ require_once 'session_config.php';
                 // Adjust SQL query based on the selected category
                 $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
                 $search_filter = isset($_GET['search']) ? $_GET['search'] : '';
-                $sql = "SELECT  p.product_id, p.name AS productname, p.description, p.gender, p.price, p.image_url, c.name AS categoryname FROM products p, categories c WHERE p.category_id=c.category_id";
+                $sql = "SELECT  p.product_id, p.name AS productname, p.description, p.gender, p.price, p.image_url, c.name AS categoryname FROM products p JOIN categories c ON p.category_id=c.category_id";
                 if (!empty($category_filter)) {
                             $sql .= " AND c.name = '$category_filter'";
                         }
