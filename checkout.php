@@ -79,10 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             $color = $details['color'];
             $size = $details['size'];
             $totalPrice += $productPrice * $quantity;
-            // $stmt = $conn->prepare("UPDATE product SET quantity = quantity - ? WHERE productID = ?");
-            // $stmt->bind_param('ii', $quantity, $productID);
-            // $stmt->execute();
-            // $stmt->close();
 
             $cart_details[] = [
                 'productID' => $productID,

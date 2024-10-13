@@ -42,7 +42,7 @@ require_once 'session_config.php';
                                 
                                 <?php
                             
-                            // Fetch distinct categories from the database
+                                // Fetch distinct categories from the database
                                 $sql_categories = "SELECT DISTINCT name FROM categories";
                                 $result_categories = mysqli_query($connection, $sql_categories);
                                 if (mysqli_num_rows($result_categories) > 0) {
@@ -74,7 +74,6 @@ require_once 'session_config.php';
                 // Adjust SQL query based on the selected category
                 $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
                 $search_filter = isset($_GET['search']) ? $_GET['search'] : '';
-                // $sql = "SELECT p.product_id, p.name, p.description, p.price, p.image_url FROM products p";
                 $sql = "SELECT  p.product_id, p.name AS productname, p.description, p.gender, p.price, p.image_url, c.name AS categoryname FROM products p, categories c WHERE p.category_id=c.category_id";
                 if (!empty($category_filter)) {
                             $sql .= " AND c.name = '$category_filter'";
