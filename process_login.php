@@ -80,7 +80,7 @@ function authenticateUser($email, $pwd)
     }
 
     // Prepare and execute the statement
-    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, is_admin FROM users WHERE email=? LIMIT 1");
+    $stmt = $conn->prepare("SELECT user_id, password, fname, lname, address, is_admin FROM users WHERE email=?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -91,7 +91,7 @@ function authenticateUser($email, $pwd)
         $fname = $row["fname"];
         $lname = $row["lname"];
         $address = $row["address"];
-        if ($pwd === $row["password"]) {
+        if (password_verify($pwd, $row["password"])) {
             // Password matches, authentication successful
             $success = true;
             // Set session variables

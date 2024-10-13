@@ -79,10 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             $color = $details['color'];
             $size = $details['size'];
             $totalPrice += $productPrice * $quantity;
-            // $stmt = $conn->prepare("UPDATE product SET quantity = quantity - ? WHERE productID = ?");
-            // $stmt->bind_param('ii', $quantity, $productID);
-            // $stmt->execute();
-            // $stmt->close();
 
             $cart_details[] = [
                 'productID' => $productID,
@@ -102,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
 
         $conn->commit();
 
+        // find id of inserted order
         $sql_order = "SELECT MAX(order_id) as order_id from orders";
         $result_order = mysqli_query($conn, $sql_order);
         if (mysqli_num_rows($result_order) > 0) {
@@ -109,7 +106,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                 $orderID = $row_order['order_id'];
             }
         }
+
+        // insert into transactions table
+        $stmt = $conn->prepare("INSERT INTO transactions (order_id, payment_method, payment_status) VALUES (?, ?, 'Completed')");
+        $stmt->bind_param('is', $orderID, $paymentMethod);
+        $stmt->execute();
+        $stmt->close();
+
+        $conn->commit();
         
+        // select color and size from products in cart to insert into ordersproduct
         foreach ($cart_details as $item) {
             $sql_get_ids = "SELECT c.color_id, s.size_id from colors c, sizes s where c.name='$color' AND s.name='$size'";
             $result_ids = mysqli_query($conn, $sql_get_ids);
@@ -120,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                 }
             }
 
+            // insert cart products using foreach() into ordersproduct 
             $stmt = $conn->prepare("INSERT INTO ordersproduct (order_id, product_id, color_id, size_id, quantity)
             VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param('iiiii', $orderID, $item['productID'], $colorID, $sizeID, $quantity);
@@ -136,6 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             'items' => $_SESSION['cart'],
             'firstName' => $firstName,  
             'lastName' => $lastName,   
+            'paymentMethod' => $paymentMethod,   
             'email' => $email
         ];
         // Clear the cart
@@ -244,7 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
                             <img src="/images/mastercard_logo.jpg" alt="Mastercard" class="payment-logo">
                             <img src="/images/amex_logo.jpg" alt="American Express" class="payment-logo">
                             <!-- Hidden input to store the detected card type -->
-                            <input type="hidden" name="paymentMethod" id="paymentMethod" value="">
+                            <input hidden name="paymentMethod" id="paymentMethod" value="">
                         </div>
                     </div>
                     <div class="row">

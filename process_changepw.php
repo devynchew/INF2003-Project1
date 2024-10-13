@@ -13,10 +13,16 @@ require_once 'session_config.php';
 
             session_start();
 
-            $email = $_SESSION["changepw_email"];
-            $confirmPwd = $pwd = $errorMsg = "";
+            $email = $confirmPwd = $pwd = $errorMsg = "";
             $success = true;
 
+            // Email
+            if (empty($_POST["email"])) {
+                $errorMsg .= "Email is required.<br>";
+                $success = false;
+            } else {
+                $email = $_POST["email"]; 
+            }
             // Password
             if (empty($_POST["pwd"])) {
                 $errorMsg .= "Password is required.<br>";
@@ -95,7 +101,7 @@ require_once 'session_config.php';
                     else
                     {
                         // Prepare the statement:
-                        $stmt = $conn->prepare("UPDATE members SET password=? WHERE email=?");
+                        $stmt = $conn->prepare("UPDATE users SET password=? WHERE email=?");
 
                         // Bind & execute the query statement:
                         $stmt->bind_param("ss", $pwd, $email);

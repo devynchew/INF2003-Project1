@@ -7,7 +7,6 @@ if (!isset($_SESSION['order_summary'])) {
     exit;
 }
 
-
 // Retrieve order summary data from session
 $orderSummary = $_SESSION['order_summary'];
 $items = $orderSummary['items'];
@@ -51,12 +50,6 @@ $ordersProductDetails = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 $conn->close();
 
-
-// $addressParts = explode(',', $orderDetails['shippingAddress']);
-
-// $address = $addressParts[0] ?? '';
-// $countryCode = $addressParts[1] ?? '';
-// $zip = $addressParts[2] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">

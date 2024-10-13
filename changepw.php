@@ -14,6 +14,7 @@ require_once 'session_config.php';
             session_start();
             $email = $_SESSION['changepw_email'];
         ?>
+        
         <main class="formcontainer">
             <h1>Change Password</h1>
             <p>
@@ -23,12 +24,17 @@ require_once 'session_config.php';
             <form action="process_changepw.php" method="post">
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">New Password:</label>
+                    <label for="email" class="form-label">Email:</label>
+                    <input required type="email" id="email" name="email" class="form-control" placeholder="Enter email">
+                </div>
+
+                <div class="mb-3">
+                    <label for="pwd" class="form-label">New Password:</label>
                     <input required type="password" id="pwd" name="pwd" class="form-control" placeholder="Enter password">
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Confirm New Password:</label>
+                    <label for="confirm_pwd" class="form-label">Confirm New Password:</label>
                     <input required type="password" id="confirm_pwd" name="pwd_confirm" class="form-control" placeholder="Enter password">
                 </div>
 

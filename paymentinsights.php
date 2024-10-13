@@ -166,9 +166,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['view_details'])) {
                     <label for="dropdown1">Payment Method:</label>
                     <select id="dropdown1" name="payment_method">
                         <option value="all">All</option>
-                        <option value="credit card">Credit Card</option>
-                        <option value="paypal">PayPal</option>
-                        <option value="bank transfer">Bank Transfer</option>
+                        <option value="Visa">Visa</option>
+                        <option value="Mastercard">Mastercard</option>
+                        <option value="American Express">American Express</option>
                     </select>
 
                     <input type="submit" value="Filter" class="btn btn-primary">
@@ -184,7 +184,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['view_details'])) {
                             <th>Payment Method</th>
                             <th>Transaction Count</th>
                             <th>Total Amount</th>
-                            <th>Action</th>
+                            <th>View More Details</th>
                         </tr>
                     </thead>
                     <tbody>
