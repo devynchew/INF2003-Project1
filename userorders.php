@@ -101,14 +101,6 @@ $errorMsg = false;
                                                 echo "<td>".$row["order_month"]."/".$row["order_year"]."</td>";
                                                 echo "<td>".$row["total_amount"]."</td>";
                                                 echo "<td>".$date."</td>";
-                                                echo "<td>";
-                                                if ($row["orderStatus"] != "Refunded") {
-                                                    echo "<form action='refund.php' method='post'>";
-                                                    echo "<input type='hidden' name='order_id' value='" . $row['order_id'] . "'>";
-                                                    echo "<button type='submit' class='btn btn-warning btn-sm'>Request Refund</button>";
-                                                    echo "</form>";
-                                                }
-                                                echo "</td>";
                                                 echo "</tr>";
                                             }
                                         }
