@@ -3,6 +3,46 @@ require_once 'session_config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    /* Tooltip container */
+    .tooltip2 {
+        position: relative;
+        display: inline;
+        border-bottom: 1px solid black;
+    }
+
+    .tooltip2 .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 150%;
+        left: 50%;
+        margin-left: -60px;
+        font-size: 12px;
+    }
+
+    .tooltip2 .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: black transparent transparent transparent;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip2:hover .tooltiptext {
+        visibility: visible;
+    }
+</style>
 
 <body>
     <?php
@@ -156,8 +196,9 @@ require_once 'session_config.php';
                     // User has clicked on products, to add tooltip with highest clicked product here
                     echo '<h1 class="mt-5 mb-3">Recommended Products based on your history</h1>';
                     $mostClickedProd = getHighestClickedProd($connection, $user_id);
-                    echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">Based on your <span title="' 
-                    . htmlspecialchars($mostClickedProd, ENT_QUOTES) . '">most clicked product</span>: </p>';
+                    echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">Based on your 
+                    <span class="tooltip2">most clicked product:
+                    <span class="tooltiptext">' . $mostClickedProd . '</span></span></p>';
                     echo '<div class="row">';
                     $category_id = getHighestClickedCategory($connection, $user_id);
                     //echo 'catid: ', $category_id;
