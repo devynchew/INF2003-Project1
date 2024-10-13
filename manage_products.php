@@ -45,7 +45,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php elseif (isset($_GET['status']) && $_GET['status'] == 'deleted'): ?>
+        <?php elseif (isset($_GET['status']) && $_GET['status'] == 'deleted'): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 Product deleted successfully.
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -361,6 +361,12 @@
                     <canvas id="popularColorsChart" width="400" height="auto"></canvas>
                 </div>
             </div>
+            <div class="row">
+                <div class="w-75 mx-auto">
+                    <h2>Total Revenue per Category</h2>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
         </div>
     </main>
     <?php
@@ -422,6 +428,7 @@
         echo "var productNames = " . json_encode($product_names) . ";\n";
         echo "var productSales = " . json_encode($product_sales) . ";\n";
 
+        // Display top colors ordered by customers
         $colors_sql = "SELECT c.name, COUNT(pc.product_id) AS color_popularity
                FROM productcolors pc
                JOIN colors c ON pc.color_id = c.color_id
@@ -440,6 +447,39 @@
 
         echo "var colorNames = " . json_encode($color_names) . ";\n";
         echo "var colorPopularity = " . json_encode($color_popularity) . ";\n";
+
+        // Total revenue generated per category
+        $total_revenue_sql = "
+            SELECT 
+    c.name AS category_name,
+    SUM(op.quantity * p.price) AS total_revenue
+FROM 
+    ordersproduct op
+JOIN 
+    products p ON op.product_id = p.product_id
+JOIN 
+    categories c ON p.category_id = c.category_id
+JOIN 
+    orders o ON op.order_id = o.order_id
+GROUP BY 
+    c.name
+ORDER BY 
+    total_revenue DESC;
+        ";
+
+        $total_revenue_result = mysqli_query($connection, $total_revenue_sql);
+
+        $categories = [];
+        $revenues = [];
+
+        if (mysqli_num_rows($total_revenue_result) > 0) {
+            while ($row = mysqli_fetch_assoc($total_revenue_result)) {
+                $categories[] = $row['category_name']; // Category names
+                $revenues[] = $row['total_revenue'];   // Total revenue for each category
+            }
+        } else {
+            echo "No data found.";
+        }
         ?>
 
         var topSellingProductsctx = document.getElementById('topSellingProductsChart').getContext('2d');
@@ -494,6 +534,39 @@
                     legend: {
                         position: 'top',
                     },
+                }
+            }
+        });
+        // PHP data to JavaScript
+        const categories = <?php echo json_encode($categories); ?>;
+        const revenues = <?php echo json_encode($revenues); ?>;
+
+        var revenue_ctx = document.getElementById('revenueChart').getContext('2d');
+
+        // Create the chart
+        var revenueChart = new Chart(revenue_ctx, {
+            type: 'bar', // Bar chart type
+            data: {
+                labels: categories, // Category names as labels
+                datasets: [{
+                    label: 'Revenue per Category ($)',
+                    data: revenues, // Revenue values for each category
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Bar color
+                    borderColor: 'rgba(0, 0, 0, 1)', // Border color
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true // Ensure the y-axis starts at 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true, // Show the legend
+                        position: 'top', // Legend position
+                    }
                 }
             }
         });
