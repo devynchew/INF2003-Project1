@@ -207,6 +207,7 @@ require_once 'session_config.php';
                     // Display products based on highest clicked color
                     $color_id = getHighestClickedColor($connection, $user_id, $displayed_product_ids);
                     //echo 'colorid: ', $color_id;
+                     echo '<p class="mt-3 mb-3" style="font-size: 1.2em;">You might also like: </p>';
                     displayColorProducts($connection, $color_id, $displayed_product_ids);
                     echo '</div>';
                 } else {
