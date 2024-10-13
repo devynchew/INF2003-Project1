@@ -71,11 +71,11 @@ if (empty($_POST["pwd"]) || empty($_POST["pwd_confirm"])) {
     $success = false;
 } else {
     $hashed_pwd = $_POST["pwd"];
-    // $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
-    // if (!$hashed_pwd) {
-    //     $errorMsg .= "Cannot hash password";
-    //     $success = false;
-    // }
+    $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
+    if (!$hashed_pwd) {
+        $errorMsg .= "Cannot hash password";
+        $success = false;
+    }
 }
 
 // Terms and Conditions Validation
