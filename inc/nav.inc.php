@@ -28,15 +28,8 @@ require_once 'session_config.php';
                     <a class="nav-link" href="recommendations.php">For You</a>
                 </li>
                 <?php endif; ?>
-                <!-- Show cart only if user is logged in -->
-                <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="manage_products.php">Manage Products</a>
-                    </li>
-                <?php endif; ?>
-
                 <li class="nav-item">
-                    <a class="nav-link" href="aboutus.php">About us</a>
+                    <a class="nav-link" href="aboutus.php">About Us</a>
                 </li>
             </ul>
 

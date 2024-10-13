@@ -235,12 +235,24 @@
                 </div>
             </div>
         </div>
-
+        <div class="mt-5 mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="">Top-Selling Products</h2>
+                    <canvas id="topSellingProductsChart" width="400" height="auto"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h2>Popular Colors</h2>
+                    <canvas id="popularColorsChart" width="400" height="auto"></canvas>
+                </div>
+            </div>
+        </div>
     </main>
     <?php
     include "inc/footer.inc.php";
     ?>
     <script>
+        // Update product
         $('#updateProductModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Button that triggered the modal
             var productId = button.data('id');
@@ -271,6 +283,104 @@
             $('input[name="productSizes[]"]').each(function() {
                 $(this).prop('checked', selectedSizes.includes($(this).next('label').text()));
             });
+        });
+
+        // Display top 5 selling products
+        <?php
+        $top_selling_sql = "SELECT p.name, SUM(op.quantity) AS total_sold
+                    FROM ordersproduct op
+                    JOIN products p ON op.product_id = p.product_id
+                    GROUP BY p.name
+                    ORDER BY total_sold DESC
+                    LIMIT 5";
+        $top_selling_result = mysqli_query($connection, $top_selling_sql);
+
+        $product_names = [];
+        $product_sales = [];
+
+        while ($row = mysqli_fetch_assoc($top_selling_result)) {
+            $product_names[] = $row['name'];
+            $product_sales[] = $row['total_sold'];
+        }
+
+        // Convert PHP arrays to JavaScript arrays
+        echo "var productNames = " . json_encode($product_names) . ";\n";
+        echo "var productSales = " . json_encode($product_sales) . ";\n";
+
+        $colors_sql = "SELECT c.name, COUNT(pc.product_id) AS color_popularity
+               FROM productcolors pc
+               JOIN colors c ON pc.color_id = c.color_id
+               JOIN ordersproduct op ON op.product_id = pc.product_id
+               GROUP BY c.name
+               ORDER BY color_popularity DESC";
+        $colors_result = mysqli_query($connection, $colors_sql);
+
+        $color_names = [];
+        $color_popularity = [];
+
+        while ($row = mysqli_fetch_assoc($colors_result)) {
+            $color_names[] = $row['name'];
+            $color_popularity[] = $row['color_popularity'];
+        }
+
+        echo "var colorNames = " . json_encode($color_names) . ";\n";
+        echo "var colorPopularity = " . json_encode($color_popularity) . ";\n";
+        ?>
+
+        var topSellingProductsctx = document.getElementById('topSellingProductsChart').getContext('2d');
+        var topSellingProductsChart = new Chart(topSellingProductsctx, {
+            type: 'bar',
+            data: {
+                labels: productNames, // Product names from PHP
+                datasets: [{
+                    label: 'Units Sold',
+                    data: productSales, // Sales data from PHP
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var popularColorsctx = document.getElementById('popularColorsChart').getContext('2d');
+        var popularColorsChart = new Chart(popularColorsctx, {
+            type: 'pie',
+            data: {
+                labels: colorNames,
+                datasets: [{
+                    data: colorPopularity,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                }
+            }
         });
     </script>
 </body>

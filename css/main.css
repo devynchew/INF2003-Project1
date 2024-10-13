@@ -1133,6 +1133,10 @@ figcaption {
   height: 48px;
 }
 
+canvas#popularColorsChart {
+  max-height: 500px;
+}
+
 .charts-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 

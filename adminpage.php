@@ -27,12 +27,10 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
         <a href="manageorders.php" class="list-group-item list-group-item-action">
             Manage Orders
         </a>
-
-        <!-- Add Product Button -->
-        <a href="addproduct.php" class="list-group-item list-group-item-action">
-            Add Product
+        <!-- Manage Products Button -->
+        <a href="manage_products.php" class="list-group-item list-group-item-action">
+            Manage Products
         </a>
-
         <!-- Customer Insights Button -->
         <a href="customerinsights.php" class="list-group-item list-group-item-action">
             Customer Insights
