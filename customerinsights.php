@@ -61,23 +61,6 @@ if ($sizeresult->num_rows > 0) {
     }
 }
 
-// SQL query for color
-$colorSql = "SELECT c.name, COUNT(c.name) AS order_count
-             FROM ordersproduct o
-             JOIN colors c ON o.color_id = c.color_id
-             GROUP BY c.name;";
-$colorResult = $conn->query($colorSql);
-
-$colors = [];
-$colorCounts = [];
-
-if ($colorResult->num_rows > 0) {
-    while ($row = $colorResult->fetch_assoc()) {
-        $colors[] = $row['name'];
-        $colorCounts[] = $row['order_count'];
-    }
-}
-
 // SQL query for gender
 $genderSql = "SELECT p.gender, COUNT(p.gender) AS order_count
               FROM ordersproduct o
@@ -98,8 +81,6 @@ if ($genderResult->num_rows > 0) {
 // Encode the data to JSON format to pass it to JavaScript
 $sizesJson = json_encode($sizes);
 $sizeCountsJson = json_encode($sizeCounts);
-$colorsJson = json_encode($colors);
-$colorCountsJson = json_encode($colorCounts);
 $gendersJson = json_encode($genders);
 $genderCountsJson = json_encode($genderCounts);
 ?>
@@ -139,20 +120,12 @@ $genderCountsJson = json_encode($genderCounts);
 
                     <canvas id="sizeChart" width="400" height="450"></canvas>
                 </div>
-
                 
                 <!-- Gender Chart -->
                 <div class="card chart b"  style="padding:20px;">
                     <h5 class="card-title">Gender Order Count</h5>
                     <canvas id="genderChart" width="400" height="450"></canvas>
                 </div>
-
-                <!-- Color Chart -->
-                <div class="card chart c" style="padding:20px;">
-                    <h5 class="card-title">Color Order Count</h5>
-                    <canvas id="colorChart" width="400" height="200"></canvas>
-                </div>
-
 
             </div>
             <div class="text-center">
@@ -166,14 +139,11 @@ $genderCountsJson = json_encode($genderCounts);
         // Data from PHP
         var sizes = <?php echo $sizesJson; ?>;
         var sizeCounts = <?php echo $sizeCountsJson; ?>;
-        var colors = <?php echo $colorsJson; ?>;
-        var colorCounts = <?php echo $colorCountsJson; ?>;
         var genders = <?php echo $gendersJson; ?>;
         var genderCounts = <?php echo $genderCountsJson; ?>;
 
         // Get the canvas context
         var sizectx = document.getElementById('sizeChart').getContext('2d');
-        var colorctx = document.getElementById('colorChart').getContext('2d');
         var genderctx = document.getElementById('genderChart').getContext('2d');
 
         // Size Chart
@@ -199,21 +169,19 @@ $genderCountsJson = json_encode($genderCounts);
             }
         });
 
-        // Color Chart
-        var colorChart = new Chart(colorctx, {
+        // Gender Chart
+        var genderChart = new Chart(genderctx, {
             type: 'pie',
             data: {
-                labels: colors,
+                labels: genders,
                 datasets: [{
                     label: 'Order Proportion',
-                    data: colorCounts,
+                    data: genderCounts,
                     backgroundColor: [
-                        'rgba(54, 162, 235, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)',
-                        'rgba(255, 99, 132, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'
+                        'rgba(54, 162, 235, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'
                     ],
                     borderColor: [
-                        'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)',
-                        'rgba(255, 99, 132, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'
+                        'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'
                     ],
                     borderWidth: 1
                 }]
@@ -223,28 +191,6 @@ $genderCountsJson = json_encode($genderCounts);
             }
         });
 
-        // Gender Chart
-        var genderChart = new Chart(genderctx, {
-            type: 'bar',
-            data: {
-                labels: genders,
-                datasets: [{
-                    label: 'Number of Orders',
-                    data: genderCounts,
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
     </script>
 
     <?php
