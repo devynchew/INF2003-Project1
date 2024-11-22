@@ -23,14 +23,7 @@
 	<div class="container">
 		<h2 class="text-center mb-2 footer-title">SOMETHINGQLO</h2>
 		<div class="row footer-content-row">
-			<div class="col-md-4">
-				<h3 class="about-us-heading">Newsletter</h3>
-				<form class="newsletter-form" action="news.php" method="post">Email:
-					<input type="email" name="email" value="" aria-label="newsletter" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address.">
-					<button type="submit" name="send">Subscribe</button>
-				</form>
-			</div>
-			<div class="col-md-4">
+			<div class="col-md-6">
 				<h3 class="contact-us-heading">Contact us</h3>
 				<ul class="list-unstyled">
 					<li>Email: enquiry@somethingqlo.com</li>
@@ -38,7 +31,7 @@
 					<li>Address: Blk 849 Jurong West Street 81, Singapore 640849</li>
 				</ul>
 			</div>
-			<div class="col-md-4">
+			<div class="col-md-6">
 				<h3 class="follow-us-heading">Follow us</h3>
 				<ul class="list-inline footer-links">
 					<li class="list-inline-item">
