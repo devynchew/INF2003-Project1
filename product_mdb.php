@@ -101,7 +101,7 @@ try {
                     echo '<h2 class="card-subtitle" style="font-size: 12px; text-decoration:none;">' . htmlspecialchars($product['gender']) . '</h2>';
                     echo '<h2 class="card-title" style="font-size: 16px;">' . htmlspecialchars($product['name']) . '</h2>';
                     echo '<p class="card-text">$' . htmlspecialchars($product['price']) . '</p>';
-                    echo '<a href="product_details.php?id=' . htmlspecialchars($product['product_id']) . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
+                    echo '<a href="product_details_mdb.php?id=' . htmlspecialchars($product['product_id']) . '" class="btn btn-primary" style="background-color: #0056b3">View Details</a>';
                     echo '</div>';
                     echo '</div>';
                     echo '</div>';

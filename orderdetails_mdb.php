@@ -38,8 +38,8 @@ $order_id = $_GET['order_id'];
                     <div class="user-container" style="margin-top: 10px;">
                         <div class="profile-input-field" id="navigation">
                             <ul>
-                                <li><a href="userprofile.php">My Account</a></li>
-                                <li><a href="userorders.php">My Orders</a></li>
+                                <li><a href="userprofile_mdb.php">My Account</a></li>
+                                <li><a href="userorders_mdb.php">My Orders</a></li>
                             </ul>
 
                         </div>

@@ -93,7 +93,7 @@ use MongoDB\Driver\ServerApi;
                         <br>
                         <p>Login email: <?php echo $email; ?></p>
 
-                        <form action="process_updateinfo.php" method="post" >
+                        <form action="process_updateinfo_mdb.php" method="post" >
                         <div class="form-group">
                             <label>First Name</label>
                             <input type="text" class="form-control" name="fname" style="width:20em;" placeholder="Enter your First Name" value="<?php echo $fname; ?>" required />
