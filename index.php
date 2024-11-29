@@ -20,7 +20,7 @@
               <div class="text-container">
                 <h1>Clothes that are made to impress.</h1>
                 <p>Made from high quality materials, crafted with excellence, worn with comfort. </p>
-                <a href=".\product.php" class="button" id="unique-button">Shop Now</a>
+                <a href=".\product_mdb.php" class="button" id="unique-button">Shop Now</a>
               </div>
               <div class="image-container">
                 <!-- Images are stacked with CSS; no need for separate divs for each image -->

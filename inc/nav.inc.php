@@ -21,7 +21,7 @@ require_once 'session_config.php';
                     <a class="nav-link" href="index.php">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="product.php">Products</a>
+                    <a class="nav-link" href="product_mdb.php">Products</a>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <li class="nav-item">
@@ -51,7 +51,7 @@ require_once 'session_config.php';
                 <!-- If user NOT logged in -->
                 <?php if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.php" aria-label="User login"><i class="fa-regular fa-user" style="color: #ffffff;"></i></a>
+                        <a class="nav-link" href="login_mdb.php" aria-label="User login"><i class="fa-regular fa-user" style="color: #ffffff;"></i></a>
                     </li>
 
                     <!-- If user is logged in -->
@@ -67,7 +67,7 @@ require_once 'session_config.php';
                         <!-- If user is NOT ADMIN-->
                     <?php else: ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="userprofile.php" aria-label="user profile"><i class="fa-regular fa-user" style="color: #ffffff;"></i></a>
+                            <a class="nav-link" href="userprofile_mdb.php" aria-label="user profile"><i class="fa-regular fa-user" style="color: #ffffff;"></i></a>
                         </li>
                     <?php endif; ?>
 
