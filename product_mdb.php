@@ -18,7 +18,7 @@ $apiVersion = new ServerApi(ServerApi::V1);
 
 // Connect to MongoDB
 $client = new MongoDB\Client($uri, [], ['serverApi' => $apiVersion]);
-$db = $client->selectDatabase('somethingqlo'); // Replace with your database name
+$db = $client->selectDatabase('somethingqlo'); 
 
 // Define the products collection
 $productCollection = $db->products;

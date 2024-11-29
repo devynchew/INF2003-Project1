@@ -87,8 +87,8 @@ function authenticateUser($email, $pwd)
         $user = $userCollection->findOne(['email' => $email]);
 
         if ($user) {
-            $fname = $user['fname'];
-            $lname = $user['lname'];
+            $fname = $user['name']['first'];
+            $lname = $user['name']['last'];
 
             if (password_verify($pwd, $user['password'])) {
                 // Password matches, authentication successful

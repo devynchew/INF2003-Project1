@@ -38,7 +38,7 @@ use MongoDB\Driver\ServerApi;
                 $client = new MongoDB\Client($uri, [], ['serverApi' => $apiVersion]);
                 $db = $client->selectDatabase('somethingqlo');                 
                 
-                // Define the user collection
+                // Define the users collection
                 $usersCollection = $db->users;
             } 
             catch (Exception $e) {
@@ -51,8 +51,8 @@ use MongoDB\Driver\ServerApi;
                 $user = $usersCollection->findOne(['email' => $email]);
 
                 if ($user) {
-                    $fname = $user['fname'];
-                    $lname = $user['lname'];
+                    $fname = $user['name']['first'];
+                    $lname = $user['name']['last'];
                     $address = $user['address'];
                     $pwd_hashed = $user['password'];
                 } else {
@@ -78,8 +78,8 @@ use MongoDB\Driver\ServerApi;
                     <div class="user-container" style="margin-top: 10px;">
                         <div class="profile-input-field" id="navigation">
                             <ul>
-                                <li><a href="userprofile.php">My Account</a></li>
-                                <li><a href="userorders.php">My Orders</a></li>
+                                <li><a href="userprofile_mdb.php">My Account</a></li>
+                                <li><a href="userorders_mdb.php">My Orders</a></li>
                             </ul>
 
                         </div>
