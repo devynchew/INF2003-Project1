@@ -44,7 +44,7 @@ require_once 'session_config.php';
                 <!-- Show cart only if user is logged in -->
                 <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart.php" aria-label="Shopping cart"><i class="fa-solid fa-cart-shopping" style="color: #ffffff;"></i></a>
+                        <a class="nav-link" href="cart_mdb.php" aria-label="Shopping cart"><i class="fa-solid fa-cart-shopping" style="color: #ffffff;"></i></a>
                     </li>
                 <?php endif; ?>
 

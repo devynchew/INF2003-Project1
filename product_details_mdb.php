@@ -65,7 +65,7 @@ use MongoDB\Driver\ServerApi;
                 echo '<p class="description">' . $product['description'] . '</p>';
     
                 echo '<div class="mt-3">'; // Adding margin-top for spacing
-                echo '<form action="cart.php" method="post">';
+                echo '<form action="cart_mdb.php" method="post">';
                 echo '<input type="hidden" name="product_id" value="' . $product['product_id'] . '">';
 
     ?>
