@@ -51,13 +51,56 @@ function getMongoDBConnection()
 }
 
 function getNextOrderId($db) {
-    $lastOrder = $db->orders->findOne([], ['sort' => ['order_id' => -1]]);
-    
-    $nextOrderId = ($lastOrder) ? $lastOrder['order_id'] + 1 : 1;
+    $lockAcquired = lock($db, 'order_id_lock');  // Lock for order_id generation
 
-    return $nextOrderId;
+    if (!$lockAcquired) {
+        throw new Exception('Could not acquire lock for order_id generation. Please try again later.');
+    }
+
+    try {
+        // Find the order id of the latest order
+        $lastOrder = $db->orders->findOne([], ['sort' => ['order_id' => -1]]);
+
+        $nextOrderId = ($lastOrder) ? $lastOrder['order_id'] + 1 : 1;
+
+        return $nextOrderId;
+    } finally {
+        // Release lock
+        releaseLock($db, 'order_id_lock'); 
+    }
 }
 
+// Function to lock
+function lock($db, $resource, $lockTimeout = 10, $retryInterval = 100, $maxRetries = 50) {
+    $expiresAt = new MongoDB\BSON\UTCDateTime((time() + $lockTimeout) * 1000);
+
+    for ($i = 0; $i < $maxRetries; $i++) {
+        try {
+            $db->locks->insertOne([
+                'resource' => $resource,
+                'locked_at' => new MongoDB\BSON\UTCDateTime(),
+                'expires_at' => $expiresAt
+            ]);
+            return true; 
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            $existingLock = $db->locks->findOne(['resource' => $resource]);
+            if ($existingLock && isset($existingLock['expires_at']) && $existingLock['expires_at'] < new MongoDB\BSON\UTCDateTime()) {
+
+                $db->locks->deleteOne(['resource' => $resource]);
+                continue; 
+            }
+        }
+
+        usleep($retryInterval * 1000); 
+    }
+
+    return false; 
+}
+// Function to release lock
+function releaseLock($db, $resource) {
+    $db->locks->deleteOne(['resource' => $resource]);
+}
 
 $db = getMongoDBConnection();
 
@@ -96,6 +139,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
     }
 
     try {
+
+        $lockAcquired = lock($db, 'order_insert');
+
+        if (!$lockAcquired) {
+            throw new Exception('Could not acquire lock. Please try again later.');
+        }
+
         $totalPrice = $subtotal;
         $products = [];
         
@@ -107,6 +157,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             $quantity = $details['quantity'];
             $totalPrice += $productPrice * $quantity;
 
+            // Reduce the product stock
+            $productsCollection = $db->products;
+            $product = $productsCollection->findOne(['product_id' => $product_id]);
+
+            if (!$product || $product['stock'] < $quantity) {
+
+                if (!$product) {
+                    die("Product not found or invalid ID.");
+                }
+
+                // Remove the item from the cart
+                unset($_SESSION['cart'][$productID]);
+
+                $_SESSION['alert'] = "The product '{$name}' does not have enough stock and has been removed from your cart.";
+
+                header("Location: cart_mdb.php");
+                exit;
+            }
+
+            // Deduct stock
+            $updateResult = $productsCollection->updateOne(
+                ['product_id' => $product_id, 'stock' => ['$gte' => $quantity]],
+                ['$inc' => ['stock' => -$quantity]]
+            );
+            
+            if ($updateResult->getMatchedCount() === 0) {
+                throw new Exception("Stock update failed for product: $name.");
+            }
+
             $products[] = [
                 'product_id' => $product_id,
                 'name' => $name,
@@ -116,20 +195,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             ];
         }
 
+        $totalPrice = number_format($totalPrice, 2, '.', '');
+
         $order_id = getNextOrderId($db);
+
+        $currentDate = new MongoDB\BSON\UTCDateTime(); 
+        $formattedDate = $currentDate->toDateTime()->format("Y-m-d"); 
 
         // Insert into orders table 
         $order = [
             'order_id' => $order_id,
             'user_id' => $user_id,
             'total_amount' => $totalPrice,
-            'order_date' => new MongoDB\BSON\UTCDateTime(),
+            'order_date' => $formattedDate,
             'products' => $products,
-            'payment.method' => $paymentMethod,
-            'payment.status' => "Completed"
+            'payment' => [ 
+                'method' => $paymentMethod,
+                'status' => "Completed"
+            ]
         ];
 
         $insertOrder = $db->orders->insertOne($order);
+        
+        // Release the lock
+        releaseLock($db, 'order_insert');
 
         // Save order summary to session
         $_SESSION['order_summary'] = [
@@ -145,10 +234,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
         // Clear the cart
         $_SESSION['cart'] = [];
 
-        header('Location: order_summary.php');
+        header('Location: order_summary_mdb.php');
         exit;
-    } catch (Exception $e) {
+    } 
+    catch (Exception $e) {
         die("An error occurred: " . $e->getMessage());
+    } 
+    finally {
+        // Release the lock
+        releaseLock($db, 'order_insert');
     }
 }
 ?>

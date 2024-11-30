@@ -151,6 +151,13 @@ try {
     <?php include "inc/header.inc.php"; ?>
     <?php include "inc/nav.inc.php"; ?>
     <main>
+        <?php if (isset($_SESSION['alert'])): ?>
+            <div class="alert alert-warning" style="justify-content: center;">
+                <?= htmlspecialchars($_SESSION['alert']) ?>
+            </div>
+            <?php unset($_SESSION['alert']); // Clear the alert ?>
+        <?php endif; ?>
+
         <div class="cart content-wrapper">
             <h1>Shopping Cart</h1>
             <form action="cart_mdb.php" method="post">
