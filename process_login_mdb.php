@@ -41,7 +41,8 @@ if (empty($_POST["pwd"])) {
     $errorMsg .= "Password is required.<br>";
     $success = false;
 } else {
-    $pwd = $_POST["pwd"];
+    $pwd = $_POST['pwd'];
+
 }
 
 // Attempt to authenticate the user if there are no prior input validation errors
@@ -54,8 +55,9 @@ if ($success) {
     header('Location: index.php');
     exit;
 } else {
+    $_SESSION['error'] = $pwd;
     $_SESSION['error'] = "Email/Password is incorrect"; // Use a generic error message for security
-    header('Location: login.php');
+    header('Location: login_mdb.php');
     exit;
 }
 
@@ -86,7 +88,7 @@ function authenticateUser($email, $pwd)
         // Query for the user by email
         $user = $userCollection->findOne(['email' => $email]);
 
-        if ($user) {
+        if ($user) {           
             $fname = $user['name']['first'];
             $lname = $user['name']['last'];
 
@@ -131,7 +133,7 @@ function authenticateUser($email, $pwd)
                         <h5>Thank you for signing up, <?php echo htmlspecialchars($fname) . " " . htmlspecialchars($lname); ?>!<br>
                             Kindly return to the Login page to log in.</h5>
                         <div class='mb-3'>
-                            <a href='login.php' class='btn btn-success'>Login</a>
+                            <a href='login_mdb.php' class='btn btn-success'>Login</a>
                         </div>
                     </div>
                 <?php else : ?>
@@ -140,7 +142,7 @@ function authenticateUser($email, $pwd)
                         <h4>The following input errors were detected:</h4>
                         <p><?php echo htmlspecialchars($errorMsg); ?></p>
                         <div class='mb-3'>
-                            <a href='register.php' class='btn btn-danger'>Return to Sign Up</a>
+                            <a href='register_mdb.php' class='btn btn-danger'>Return to Sign Up</a>
                         </div>
                     </div>
                 <?php endif; ?>

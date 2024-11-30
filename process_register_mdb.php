@@ -24,9 +24,9 @@ use Exception;
 use MongoDB\Client;
 use MongoDB\Driver\ServerApi;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 // Sanitization helper function
 function sanitize_input($data)
@@ -79,8 +79,9 @@ if (empty($_POST["pwd"]) || empty($_POST["pwd_confirm"])) {
     $errorMsg .= "Passwords do not match.";
     $success = false;
 } else {
-    $hashed_pwd = $_POST["pwd"];
+    $pwd = $_POST['pwd'];
     $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
+
     if (!$hashed_pwd) {
         $errorMsg .= "Cannot hash password";
         $success = false;
@@ -126,8 +127,7 @@ function saveMemberToDB() {
         // insert into users
         $user = $userCollection->insertOne([
             'user_id' => $result[0]['maxUserId']+1,
-            'name.first' => $fname,
-            'name.last' => $lname, 
+            'name' => ['first' => $fname, 'last' => $lname], 
             'email' => $email,
             'password' => $hashed_pwd,
             'is_admin' => false
@@ -153,7 +153,7 @@ function saveMemberToDB() {
                         <h5>Thank you for signing up, <?php echo htmlspecialchars($fname) . " " . htmlspecialchars($lname); ?>!<br>
                             Kindly return to the Login page to log in.</h5>
                         <div class='mb-3'>
-                            <a href='login.php' class='btn btn-success'>Login</a>
+                            <a href='login_mdb.php' class='btn btn-success'>Login</a>
                         </div>
                     </div>
                 <?php else : ?>
