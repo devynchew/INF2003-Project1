@@ -20,7 +20,7 @@ include "inc/head.inc.php";
             For existing members, please go to the
             <a href="login.php">Sign In page</a>.
         </p>
-        <form action="process_register.php" method="post">
+        <form action="process_register_mdb.php" method="post">
             <div class="mb-3">
                 <label for="fname" class="form-label">First Name:</label>
                 <input required maxlength="45" type="text" id="fname" name="fname" class="form-control" placeholder="Enter first name">
