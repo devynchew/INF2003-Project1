@@ -24,7 +24,7 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
         </a>
 
         <!-- Manage Orders Button -->
-        <a href="manageorders.php" class="list-group-item list-group-item-action">
+        <a href="manageorders_mdb.php" class="list-group-item list-group-item-action">
             Manage Orders
         </a>
         <!-- Manage Products Button -->

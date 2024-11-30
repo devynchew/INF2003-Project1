@@ -34,6 +34,12 @@ try {
         $colors = $_POST['colors'];
         $sizes = $_POST['sizes'];
 
+        if (empty($colors) || empty($sizes)) {
+            $_SESSION['alert'] = "Please select both a color and a size.";
+            header('Location:product_mdb.php'); 
+            exit;
+        }
+
         if ($quantity < 1) {
             $quantity = 1;  // Set to minimum if below 1
         } elseif ($quantity > 20) {

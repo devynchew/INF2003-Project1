@@ -62,6 +62,14 @@ try {
     include "inc/nav.inc.php";
     ?>
     <main>
+        
+        <?php if (isset($_SESSION['alert'])): ?>
+            <div class="alert alert-warning" style="justify-content: center;">
+                <?= htmlspecialchars($_SESSION['alert']) ?>
+            </div>
+            <?php unset($_SESSION['alert']); // Clear the alert ?>
+        <?php endif; ?>
+        
         <div class="container">
             <h1 class="mt-5 mb-3">Our Products</h1>
 
