@@ -91,11 +91,10 @@ $order_id = $_GET['order_id'];
                                             $product_id = (int)$product['product_id'];
                                             $quantity = (int)$product['quantity'];
 
-
                                             $productDetails = $productsCollection->findOne(['product_id' => $product['product_id']]);
 
                                             echo "<tr style='padding-top: 10px;'>";
-                                            echo "<td><a href='product_details.php?id=".$product_id."'>".$product_id."</a></td>";
+                                            echo "<td><a href='product_details_mdb.php?id=".$product_id."'>".$product_id."</a></td>";
                                             echo "<td>".$product["name"]."</td>";
                                             echo "<td>".$product["color"]."</td>";
                                             echo "<td>".$product["size"]."</td>";

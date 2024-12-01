@@ -20,7 +20,7 @@ use MongoDB\Driver\ServerApi;
     ?>
 
     <?php
-    session_start();
+    // session_start();
 
     // Enable error reporting for debugging
     // error_reporting(E_ALL);

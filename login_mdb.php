@@ -23,7 +23,7 @@ include "inc/head.inc.php";
             <p>
                 Existing Members log in here.
                 For new members, please go to the
-                <a href="register.php" style="color: #0056b3; text-decoration: underline;">Member Registration page</a>
+                <a href="register_mdb.php" style="color: #0056b3; text-decoration: underline;">Member Registration page</a>
 
             </p>
             <?php
@@ -51,7 +51,7 @@ include "inc/head.inc.php";
                     <button type="submit" class="submitbtn">Submit</button>
                 </div>
 
-                <a href="forgotpw.php" style="color: #0056b3; text-decoration: underline;">Forgot Password</a>
+                <!-- <a href="forgotpw.php" style="color: #0056b3; text-decoration: underline;">Forgot Password</a> -->
 
             </form>
         </div>

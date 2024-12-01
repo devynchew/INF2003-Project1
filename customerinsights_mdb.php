@@ -1,4 +1,4 @@
-<?php
+<?php 
 require 'vendor/autoload.php'; // Include Composer's autoloader for MongoDB
 
 use Exception;
@@ -34,15 +34,6 @@ $isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
 // Fetch user data  
 $users = $usersCollection->find([], ['projection' => ['user_id' => 1, 'fname' => 1, 'lname' => 1, 'email' => 1, 'is_admin' => 1]]);
 
-// Dropdown for month
-$months = [
-    "01" => "January", "02" => "February", "03" => "March", 
-    "04" => "April", "05" => "May", "06" => "June", 
-    "07" => "July", "08" => "August", "09" => "September", 
-    "10" => "October", "11" => "November", "12" => "December"
-];
-
-$selectedMonth = isset($_POST['month']) ? $_POST['month'] : 'all';
 // MongoDB aggregation for sizes and genders
 $sizeCounts = [];
 $genderCounts = [];
@@ -120,18 +111,7 @@ $genderCountsJson = json_encode($genderCounts);
             <div class="charts-container">
                 <div class="card chart a" style="padding:20px;">
                     <h5 class="card-title">Size Order Count</h5>
-                    <form method="post" action="">
-                        <label for="month">Select Month:</label>
-                        <select name="month" id="month" onchange="this.form.submit()">
-                            <option value="all" <?= ($selectedMonth == 'all') ? 'selected' : '' ?>>All Months</option>
-                            <?php foreach ($months as $value => $label): ?>
-                                <option value="<?= $value ?>" <?= ($value == $selectedMonth) ? 'selected' : '' ?>>
-                                    <?= $label ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </form>
-
+                    <!-- Removed the month selection dropdown -->
                     <canvas id="sizeChart" width="400" height="450"></canvas>
                 </div>
                 
