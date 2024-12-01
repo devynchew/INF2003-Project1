@@ -1,7 +1,9 @@
 <?php
 require_once 'session_config.php';
 require 'vendor/autoload.php'; // Include Composer's autoloader for MongoDB
-
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 use Exception;
 use MongoDB\Client;
 use MongoDB\Driver\ServerApi;
@@ -30,11 +32,10 @@ use MongoDB\Driver\ServerApi;
     }
 
     $product_id = $_GET['id'];
-
+    $user_id = isset($_SESSION['user_id']);
     // Check if product ID is set in the URL
-    if (isset($_GET['id']))
+    if (isset($product_id))
     { // fetch prod details if id is set
-        
         $config = parse_ini_file('/var/www/private/db-config.ini');
         $uri = $config['mongodb_uri'];
 
@@ -48,9 +49,34 @@ use MongoDB\Driver\ServerApi;
             
             // Define the orders collection
             $productsCollection = $db->products;
-
+            // Define the users collection
+            $userCollection = $db->users; // Replace with your users collection name
             $product = $productsCollection->findone(['product_id' => (int)$product_id]);
-            
+            if (isset($user_id)){
+                $user = $userCollection->findOne(['user_id' => (int)$user_id]);
+                if ($user) {
+                $clicks = $user['clicks'] ?? [];
+                if (isset($clicks[(int)$product_id])) {
+                    // Increment the click count for the product
+                    $clicks[(int)$product_id] += 1;
+                    //echo"incremented $product_id";
+                } else {
+                    // Create a new entry for the product with a click count of 1
+                    $clicks[(int)$product_id] = 1;
+                    //echo"created click for $product_id";
+                }
+                $userCollection->updateOne(
+                    ['user_id' => (int)$user_id],
+                    ['$set' => ['clicks' => $clicks]]
+                );
+            }else {
+                //echo"$user_id";
+                //echo"user not found";
+            }
+            }
+            else{
+                //echo"user id not found";
+            }
             if ($product) {
                 echo '<div class="container">';
                 echo '<div class="row mt-5">';
