@@ -1,8 +1,9 @@
 <?php
+
 session_start();
 
-$config = parse_ini_file('/var/www/private/db-config.ini');
-$conn = new mysqli($config['servername'], $config['username'], $config['password'], $config['dbname']);
+require_once 'session_config.php';
+require 'vendor/autoload.php'; // Include Composer's autoloader for MongoDB
 
 // Check if the user is logged in and if they are an admin or superadmin
 // This is a simplified check; your actual implementation might be different
@@ -14,15 +15,24 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
 // Flag to determine if the current user is a superadmin
 $isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
 
-// Prepare the SQL query based on user role
-$sql = "SELECT user_id, fname, lname, email" . ($isSuperAdmin ? ", is_admin" : "") . " FROM users";
+use Exception;
+use MongoDB\Client;
+use MongoDB\Driver\ServerApi;
 
-$result = $conn->query($sql);
+// Load configuration
+$config = parse_ini_file('/var/www/private/db-config.ini');
+$uri = $config['mongodb_uri'];
 
-// Check for errors - This is basic error checking; you might want to handle errors more gracefully
-if (!$result) {
-    die("Error fetching data: " . $conn->error);
-}
+// Specify Stable API version 1
+$apiVersion = new ServerApi(ServerApi::V1);
+
+// Connect to MongoDB
+$client = new MongoDB\Client($uri, [], ['serverApi' => $apiVersion]);
+$db = $client->selectDatabase('somethingqlo');
+
+// Define the users collection
+$usersCollection = $db->users;
+$users = $usersCollection->find();
 ?>
 
 <!DOCTYPE html>
@@ -40,22 +50,24 @@ if (!$result) {
     include "inc/nav.inc.php";
     ?>
     <div role="main" class="row justify-content-center">
-        <div class="col-md-10"> <!-- Adjusted for a maximum width -->
+        <div class="col-md-10">
             <?php if (isset($_SESSION['successMsg'])): ?>
                 <div class="alert alert-success" role="alert">
                     <?= $_SESSION['successMsg'] ?>
                 </div>
                 <?php unset($_SESSION['successMsg']); ?>
             <?php endif; ?>
+
             <?php if (isset($_SESSION['errorMsg'])): ?>
                 <div class="alert alert-danger" role="alert">
                     <?= $_SESSION['errorMsg'] ?>
                 </div>
                 <?php unset($_SESSION['errorMsg']); ?>
             <?php endif; ?>
-            <h2 class="text-center">Manage Users</h2> <!-- Centered Text -->
-            <div class="table-responsive"> <!-- Responsive table wrapper -->
-                <table class="table table-bordered mx-auto"> <!-- Centered Table -->
+
+            <h2 class="text-center">Manage Users</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered mx-auto">
                     <thead>
                         <tr>
                             <th>Member ID</th>
@@ -69,24 +81,24 @@ if (!$result) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                        <?php foreach ($users as $user): ?>
                             <tr>
-                                <td><?= htmlspecialchars($row['user_id']) ?></td>
-                                <td id="fname_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['fname']) ?></td>
-                                <td id="lname_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['lname']) ?></td>
-                                <td id="email_<?= $row['user_id'] ?>"><?= htmlspecialchars($row['email']) ?></td>
+                                <td><?= htmlspecialchars($user['user_id']) ?></td>
+                                <td id="fname_<?= $user['user_id'] ?>"><?= htmlspecialchars($user['name']['first']) ?></td>
+                                <td id="lname_<?= $user['user_id'] ?>"><?= htmlspecialchars($user['name']['last']) ?></td>
+                                <td id="email_<?= $user['user_id'] ?>"><?= htmlspecialchars($user['email']) ?></td>
                                 <?php if ($isSuperAdmin): ?>
-                                    <td id="is_admin_<?= $row['user_id'] ?>"><?= $row['is_admin'] ? 'Yes' : 'No' ?></td>
+                                    <td id="is_admin_<?= $user['user_id'] ?>"><?= isset($user['is_admin']) && $user['is_admin'] ? 'Yes' : 'No' ?></td>
                                 <?php endif; ?>
-                                <td id="actions_<?= $row['user_id'] ?>">
-                                    <button type="button" onclick="editRow(<?= $row['user_id'] ?>)" class="btn btn-primary">Edit</button>
+                                <td id="actions_<?= $user['user_id'] ?>">
+                                    <button type="button" onclick="editRow('<?= $user['user_id'] ?>')" class="btn btn-primary">Edit</button>
                                     <form action="deleteuser.php" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline-block;">
-                                        <input type="hidden" name="user_id" value="<?= htmlspecialchars($row['user_id']) ?>">
+                                        <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['user_id']) ?>">
                                         <button type="submit" class="btn btn-danger">Delete</button>
                                     </form>
                                 </td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
                 <div class="text-center">
@@ -95,10 +107,6 @@ if (!$result) {
             </div>
         </div>
     </div>
-    <?php
-    // Close the database connection
-    $conn->close();
-    ?>
 </body>
 
 </html>

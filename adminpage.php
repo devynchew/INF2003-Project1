@@ -19,7 +19,7 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     <h2>Admin Dashboard</h2>
     <div role="complementary" class="list-group mt-4">
         <!-- Manage Users Button -->
-        <a href="manageuser.php" class="list-group-item list-group-item-action">
+        <a href="manageuser_mdb.php" class="list-group-item list-group-item-action">
             Manage Users
         </a>
 

@@ -1,67 +1,83 @@
 <?php
 session_start();
 
+require_once 'session_config.php';
+require 'vendor/autoload.php'; // Include Composer's autoloader for MongoDB
+
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header("Location: login.php");
     exit;
 }
 
-$config = parse_ini_file('/var/www/private/db-config.ini');
-$conn = new mysqli($config['servername'], $config['username'], $config['password'], $config['dbname']);
+use Exception;
+use MongoDB\Client;
+use MongoDB\Driver\ServerApi;
 
-// Check for database connection error
-if ($conn->connect_error) {
-    $_SESSION['errormsg'] = "Connection failed: " . $conn->connect_error;
+// Load configuration
+$config = parse_ini_file('/var/www/private/db-config.ini');
+$uri = $config['mongodb_uri'];
+
+// Specify Stable API version 1
+$apiVersion = new ServerApi(ServerApi::V1);
+
+try {
+    // Connect to MongoDB
+    $client = new MongoDB\Client($uri, [], ['serverApi' => $apiVersion]);
+    $db = $client->selectDatabase('somethingqlo');
+
+    $isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
+
+    // Handle POST request for updating user data
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
+        $memberId = (int) sanitize_input($_POST['member_id']);
+        $fname = sanitize_input($_POST['fname']);
+        $lname = sanitize_input($_POST['lname']);
+        $email = sanitize_input($_POST['email']);
+        $is_admin = ($isSuperAdmin && isset($_POST['is_admin'])) ? true : false;
+
+        // Create the update document
+        $updateFields = [
+            'name.first' => $fname,
+            'name.last' => $lname,
+            'email' => $email
+        ];
+
+        // Only update the is_admin field if the user is a superadmin
+        if ($isSuperAdmin) {
+            $updateFields['is_admin'] = $is_admin;
+        }
+
+        // Update the user in the MongoDB collection
+        try {
+            $updateResult = $collection->updateOne(
+                ['user_id' => $memberId],
+                ['$set' => $updateFields]
+            );
+
+            if ($updateResult->getModifiedCount() > 0) {
+                unset($_SESSION['errorMsg']);
+                $_SESSION['successMsg'] = "Success!";
+            } else {
+                $_SESSION['errorMsg'] = "No changes were made.";
+            }
+        } catch (Exception $e) {
+            $_SESSION['errorMsg'] = "Failed to update user. Error: " . $e->getMessage();
+        }
+    } else {
+        $_SESSION['errorMsg'] = "Invalid request.";
+    }
+
+    // Redirect back to manageuser.php
     header("Location: manageuser.php");
     exit;
+} catch (MongoDB\Driver\Exception\Exception $e) {
+    $errorMsg = "MongoDB connection error: " . $e->getMessage();
+    $success = false;
 }
 
-$isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
+
 
 function sanitize_input($data)
 {
     return htmlspecialchars(stripslashes(trim($data)));
 }
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['member_id'])) {
-    $memberId = sanitize_input($_POST['member_id']);
-    $fname = sanitize_input($_POST['fname']);
-    $lname = sanitize_input($_POST['lname']);
-    $email = sanitize_input($_POST['email']);
-    $is_admin = ($isSuperAdmin && isset($_POST['is_admin'])) ? 1 : 0; // Assuming checkbox sends on value if checked
-
-    if ($isSuperAdmin) {
-        $sql = "UPDATE users SET fname = ?, lname = ?, email = ?, is_admin = ? WHERE user_id = ?";
-    } else {
-        $sql = "UPDATE users SET fname = ?, lname = ?, email = ? WHERE user_id = ?";
-    }
-
-    $stmt = $conn->prepare($sql);
-
-    if ($stmt === false) {
-        $_SESSION['errorMsg'] = "Failed to prepare statement. Error: " . $conn->error;
-        header("Location: manageuser.php");
-        exit;
-    }
-
-    if ($isSuperAdmin) {
-        $stmt->bind_param("sssii", $fname, $lname, $email, $is_admin, $memberId);
-    } else {
-        $stmt->bind_param("sssi", $fname, $lname, $email, $memberId);
-    }
-
-    if ($stmt->execute()) {
-        unset($_SESSION['errorMsg']);
-        $_SESSION['successMsg'] = "Success!";
-    } else {
-        $_SESSION['errorMsg'] = "Failed to update user. Error: " . $stmt->error;
-    }
-
-    $stmt->close();
-} else {
-    $_SESSION['errorMsg'] = "Invalid request.";
-}
-
-$conn->close();
-header("Location: manageuser.php");
-exit;

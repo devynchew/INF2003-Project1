@@ -18,7 +18,7 @@ $apiVersion = new ServerApi(ServerApi::V1);
 
 // Connect to MongoDB
 $client = new MongoDB\Client($uri, [], ['serverApi' => $apiVersion]);
-$db = $client->selectDatabase('somethingqlo'); 
+$db = $client->selectDatabase('somethingqlo');
 
 // Define the products collection
 $productCollection = $db->products;
@@ -94,7 +94,7 @@ $productCollection = $db->products;
                         foreach ($products as $product) {
                             $colors = $product['colors'];
                             $sizes = $product['sizes'];
-                            
+
                             $colors = (array) $product['colors']; // Convert object to array
                             $sizes = (array) $product['sizes'];   // Convert object to array
 
@@ -106,7 +106,7 @@ $productCollection = $db->products;
                             echo '<td class="">' . $product['description'] . '</td>';
                             echo '<td class="">$' . $product['price'] . '</td>';
                             echo '<td class="">' . $product['category']['name'] . '</td>';
-                            
+
                             // Colors
                             echo '<td class="">';
                             if (isset($colors) && is_array($colors) && !empty($colors)) {
@@ -115,7 +115,7 @@ $productCollection = $db->products;
                                 echo 'No colors available';
                             }
                             echo '</td>';
-                            
+
                             // Sizes
                             echo '<td class="">';
                             if (isset($sizes) && is_array($sizes) && !empty($sizes)) {
@@ -124,7 +124,7 @@ $productCollection = $db->products;
                                 echo 'No sizes available';
                             }
                             echo '</td>';
-                            
+
                             echo '<td class="">' . $product['gender'] . '</td>';
                             echo '<td class="">
                                     <button type="button" class="btn btn-primary update-product-btn" data-toggle="modal" data-target="#updateProductModal" 
@@ -133,24 +133,24 @@ $productCollection = $db->products;
                                     data-description="' . $product['description'] . '" 
                                     data-price="' . $product['price'] . '" 
                                     data-category="' . $product['category']['name'] . '" ';
-                            
+
                             // Data Attributes for Colors
                             if (isset($colors) && is_array($colors)) {
                                 $colorsString = implode(', ', $colors); // Join colors into a comma-separated string
                                 echo 'data-colors="' . htmlspecialchars($colorsString) . '" ';
                             }
-                            
-                            
+
+
                             // Data Attributes for Sizes
                             if (isset($sizes) && is_array($sizes)) {
                                 $sizesString = implode(', ', $sizes); // Join sizes into a comma-separated string
                                 echo 'data-sizes="' . htmlspecialchars($sizesString) . '" ';
                             }
-                            
+
                             echo 'data-gender="' . $product['gender'] . '">Edit
                                     </button>
                                 </td>';
-                            
+
                             // Delete Button
                             echo "<td>
                                     <form method='POST' action='process_delete_product_mdb.php' style='display:inline;'>
@@ -158,12 +158,10 @@ $productCollection = $db->products;
                                         <button type='submit' class='btn btn-danger'>Delete</button>
                                     </form>
                                 </td>";
-                            
+
                             echo '</tr>';
-                            
                         }
-                    }
-                    catch (Exception $e) {
+                    } catch (Exception $e) {
                         echo 'An error occurred: ' . $e->getMessage();
                     }
                     ?>
@@ -183,8 +181,8 @@ $productCollection = $db->products;
                     </div>
                     <div class="modal-body">
                         <?php
-                            $sizes = (array) $product['sizes'];   // Convert object to array
-                        
+                        $sizes = (array) $product['sizes'];   // Convert object to array
+
 
                         ?>
                         <form id="editProductForm" method="post" action="process_update_product_mdb.php">
@@ -206,13 +204,13 @@ $productCollection = $db->products;
                                 <label for="product_category">Category</label>
                                 <select class="form-control" id="product_category" name="product_category" required>
                                     <?php
-                                        $categories = $productCollection->aggregate([
-                                            ['$group' => ['_id' => '$category.name']]
-                                        ]);
+                                    $categories = $productCollection->aggregate([
+                                        ['$group' => ['_id' => '$category.name']]
+                                    ]);
 
-                                        foreach ($categories as $category) {
-                                            echo '<option value="' . htmlspecialchars($category['_id']) . '">' . htmlspecialchars($category['_id']) . '</option>';
-                                        }
+                                    foreach ($categories as $category) {
+                                        echo '<option value="' . htmlspecialchars($category['_id']) . '">' . htmlspecialchars($category['_id']) . '</option>';
+                                    }
                                     ?>
                                 </select>
                             </div>
@@ -220,18 +218,18 @@ $productCollection = $db->products;
                                 <label for="productColors">Available Colors</label>
                                 <div id="productColors">
                                     <?php
-                                        $colors = $product['colors']; // Access all available colors
-                                        
-                                        if (!empty($colors)) {
-                                            foreach ($colors as $color) {
-                                                echo "<div class='form-check'>
+                                    $colors = $product['colors']; // Access all available colors
+
+                                    if (!empty($colors)) {
+                                        foreach ($colors as $color) {
+                                            echo "<div class='form-check'>
                                                     <input class='form-check-input' type='checkbox' name='productColors[]' value='" . htmlspecialchars($color) . "' id='color_" . htmlspecialchars($product['product_id'] . '_' . $color) . "'>
                                                     <label class='form-check-label' for='color_" . htmlspecialchars($product['product_id'] . '_' . $color) . "'>" . htmlspecialchars($color) . "</label>
                                                 </div>";
-                                            }
-                                        } else {
-                                            echo "<p>No colors available.</p>";
                                         }
+                                    } else {
+                                        echo "<p>No colors available.</p>";
+                                    }
                                     ?>
                                 </div>
                             </div>
@@ -240,18 +238,18 @@ $productCollection = $db->products;
                                 <label for="productSizes">Available Sizes</label>
                                 <div id="productSizes">
                                     <?php
-                                        $sizes = $product['sizes']; // Access all available sizes
-    
-                                        if (!empty($sizes)) {
-                                            foreach ($sizes as $size) {
-                                                echo "<div class='form-check'>
+                                    $sizes = $product['sizes']; // Access all available sizes
+
+                                    if (!empty($sizes)) {
+                                        foreach ($sizes as $size) {
+                                            echo "<div class='form-check'>
                                                     <input class='form-check-input' type='checkbox' name='productSizes[]' value='" . htmlspecialchars($size) . "' id='color_" . htmlspecialchars($product['product_id'] . '_' . $size) . "'>
                                                     <label class='form-check-label' for='size_" . htmlspecialchars($product['product_id'] . '_' . $size) . "'>" . htmlspecialchars($size) . "</label>
                                                 </div>";
-                                            }
-                                        } else {
-                                            echo "<p>No colors available.</p>";
                                         }
+                                    } else {
+                                        echo "<p>No colors available.</p>";
+                                    }
                                     ?>
                                 </div>
                             </div>
@@ -264,7 +262,7 @@ $productCollection = $db->products;
                                 </select>
                             </div>
                         </form>
-                        
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -274,39 +272,39 @@ $productCollection = $db->products;
             </div>
         </div>
         <script>
-        // Update product
-        $('#updateProductModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var productId = button.data('id');
-            var productName = button.data('name');
-            var productDescription = button.data('description');
-            var productPrice = button.data('price');
-            var productColors = button.data('colors');
-            var productSizes = button.data('sizes');
-            var productGender = button.data('gender');
-            var categoryName = button.data('category');
+            // Update product
+            $('#updateProductModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var productId = button.data('id');
+                var productName = button.data('name');
+                var productDescription = button.data('description');
+                var productPrice = button.data('price');
+                var productColors = button.data('colors');
+                var productSizes = button.data('sizes');
+                var productGender = button.data('gender');
+                var categoryName = button.data('category');
 
-            // Populate the form fields with the current product data
-            $('#productId').val(productId);
-            $('#productName').val(productName);
-            $('#productDescription').val(productDescription);
-            $('#productPrice').val(productPrice);
-            $('#productGender').val(productGender);
-            $('#product_category').val(categoryName);
+                // Populate the form fields with the current product data
+                $('#productId').val(productId);
+                $('#productName').val(productName);
+                $('#productDescription').val(productDescription);
+                $('#productPrice').val(productPrice);
+                $('#productGender').val(productGender);
+                $('#product_category').val(categoryName);
 
-            // Pre-check the color checkboxes based on the selected colors
-            var selectedColors = productColors.split(', ');
-            $('input[name="productColors[]"]').each(function() {
-                $(this).prop('checked', selectedColors.includes($(this).val())); // Compare with `value`
+                // Pre-check the color checkboxes based on the selected colors
+                var selectedColors = productColors.split(', ');
+                $('input[name="productColors[]"]').each(function() {
+                    $(this).prop('checked', selectedColors.includes($(this).val())); // Compare with `value`
+                });
+
+
+                // Pre-check the size checkboxes based on the selected sizes
+                var selectedSizes = productSizes.split(', ');
+                $('input[name="productSizes[]"]').each(function() {
+                    $(this).prop('checked', selectedSizes.includes($(this).next('label').text()));
+                });
             });
-
-
-            // Pre-check the size checkboxes based on the selected sizes
-            var selectedSizes = productSizes.split(', ');
-            $('input[name="productSizes[]"]').each(function() {
-                $(this).prop('checked', selectedSizes.includes($(this).next('label').text()));
-            });
-        });
         </script>
 </body>
 
