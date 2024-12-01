@@ -82,6 +82,7 @@ $productCollection = $db->products;
                         <th scope="col" class="text-nowrap">Available Colors</th>
                         <th scope="col" class="text-nowrap">Available Sizes</th>
                         <th scope="col" class="text-nowrap">Gender</th>
+                        <th scope="col" class="text-nowrap">Stock</th>
                         <th scope="col" class="text-nowrap"></th>
                         <th scope="col" class="text-nowrap"></th>
                     </tr>
@@ -126,6 +127,7 @@ $productCollection = $db->products;
                             echo '</td>';
 
                             echo '<td class="">' . $product['gender'] . '</td>';
+                            echo '<td class="">' . $product['stock'] . '</td>';
                             echo '<td class="">
                                     <button type="button" class="btn btn-primary update-product-btn" data-toggle="modal" data-target="#updateProductModal" 
                                     data-id="' . $product['product_id'] . '" 
@@ -167,8 +169,11 @@ $productCollection = $db->products;
                     ?>
                 </tbody>
             </table>
+            
         </div>
-
+        <div class="text-center">
+            <a href="adminpage.php" class="btn btn-secondary mr-2">Back to Admin</a>
+        </div>
         <!-- Edit Product Modal -->
         <div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
             <div class="modal-dialog">

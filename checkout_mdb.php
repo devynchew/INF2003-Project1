@@ -195,8 +195,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout']) && !empty(
             ];
         }
 
-        $totalPrice = number_format($totalPrice, 2, '.', '');
-
         $order_id = getNextOrderId($db);
 
         $currentDate = new MongoDB\BSON\UTCDateTime(); 
