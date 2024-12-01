@@ -22,7 +22,6 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
         <a href="manageuser_mdb.php" class="list-group-item list-group-item-action">
             Manage Users
         </a>
-
         <!-- Manage Orders Button -->
         <a href="manageorders_mdb.php" class="list-group-item list-group-item-action">
             Manage Orders
@@ -31,11 +30,6 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
         <a href="manage_products_mdb.php" class="list-group-item list-group-item-action">
             Manage Products
         </a>
-        <!-- Customer Insights Button -->
-        <a href="customerinsights.php" class="list-group-item list-group-item-action">
-            Customer Insights
-        </a>
-
         <!-- Payment Insights Button -->
         <a href="paymentinsights_mdb.php" class="list-group-item list-group-item-action">
             Payment Insights
