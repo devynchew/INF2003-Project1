@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 
 require_once 'session_config.php';
@@ -24,7 +27,7 @@ try {
     // Connect to MongoDB
     $client = new MongoDB\Client($uri, [], ['serverApi' => $apiVersion]);
     $db = $client->selectDatabase('somethingqlo');
-
+    $collection = $db->users;
     $isSuperAdmin = isset($_SESSION['isSuperAdmin']) && $_SESSION['isSuperAdmin'];
 
     // Handle POST request for updating user data
