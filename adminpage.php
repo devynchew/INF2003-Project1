@@ -37,7 +37,7 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
         </a>
 
         <!-- Payment Insights Button -->
-        <a href="paymentinsights.php" class="list-group-item list-group-item-action">
+        <a href="paymentinsights_mdb.php" class="list-group-item list-group-item-action">
             Payment Insights
         </a>
     </div>
