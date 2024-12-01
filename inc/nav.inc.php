@@ -25,7 +25,7 @@ require_once 'session_config.php';
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="recommendations.php">For You</a>
+                    <a class="nav-link" href="recommendations_mdb.php">For You</a>
                 </li>
                 <?php endif; ?>
                 <li class="nav-item">
