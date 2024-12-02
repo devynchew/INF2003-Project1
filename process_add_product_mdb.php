@@ -38,7 +38,7 @@ $productCollection = $db->products;
     $productColors = $_POST['newProductColors'];
     $productSizes = $_POST['newProductSizes'];
     $productGender = $_POST['newProductGender'];
-    $productStock = $_POST['newProductStock'];
+    $productStock = (int)$_POST['newProductStock'];
     
     $pipeline = [
         ['$group' => ['_id' => null, 'maxProductId' => ['$max' => '$product_id']]]

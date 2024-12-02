@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_colors = isset($_POST['productColors']) ? $_POST['productColors'] : [];
     $product_sizes = isset($_POST['productSizes']) ? $_POST['productSizes'] : [];
     $product_gender = $_POST['productGender'];
-    $product_stock = $_POST['productStock'];
+    $product_stock = (int)$_POST['productStock'];
 
     try {
         $product_id = (int) $product_id;

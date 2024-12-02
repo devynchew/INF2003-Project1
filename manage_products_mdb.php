@@ -461,9 +461,7 @@ $productCollection = $db->products;
                                 ]
                             ],
                             // Sort by totalQuantity in descending order
-                            ['$sort' => ['totalQuantity' => -1]],
-                            // Limit to get the top 5 ordered products
-                            ['$limit' => 5]
+                            ['$sort' => ['totalQuantity' => -1]]
                         ];
 
                         // Execute aggregation
