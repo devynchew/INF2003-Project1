@@ -381,6 +381,193 @@ $productCollection = $db->products;
                 </div>
             </div>
         </div>
+        <div class="mt-5 mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="">Top-Selling Products</h2>
+                    <canvas id="topSellingProductsChart" width="400" height="auto"></canvas>
+                    <?php
+                        $orderCollection = $db->orders;
+
+                        // Aggregation pipeline
+                        $pipeline = [
+                            // Unwind the products array to deconstruct each product into its own document
+                            ['$unwind' => '$products'],
+                            // Group by product_id and calculate the total quantity
+                            [
+                                '$group' => [
+                                    '_id' => '$products.product_id',
+                                    'totalQuantity' => ['$sum' => '$products.quantity']
+                                ]
+                            ],
+                            // Sort by totalQuantity in descending order
+                            ['$sort' => ['totalQuantity' => -1]],
+                            // Limit to get the top 5 ordered products
+                            ['$limit' => 5]
+                        ];
+
+                        // Execute aggregation
+                        $result = $orderCollection->aggregate($pipeline);
+
+                        // Fetch and return the top 5 most ordered products
+                        $topProducts = $result->toArray();
+
+                        if (!empty($topProducts)) {
+                            $productCollection = $db->products;
+                            
+                            $product_names = [];
+                            $product_sales = [];
+                            
+                            foreach ($topProducts as $product) {
+                                // Convert BSONDocument to PHP array
+                                $productArray = $product->getArrayCopy();
+                            
+                                // Access _id and totalQuantity fields
+                                $productId = $productArray['_id'];
+                                $totalQuantity = $productArray['totalQuantity'];
+                            
+                                // Fetch the product document from the products collection
+                                $productDoc = $productCollection->findOne(['product_id' => $productId]);
+                            
+                                if ($productDoc) {
+                                    $product_names[] = $productDoc['name'];
+                                    $product_sales[] = $totalQuantity;
+                                } 
+                            }
+                            
+                            // Convert PHP arrays to JavaScript for Chart.js
+                            echo "<script>
+                                var productNames = " . json_encode($product_names) . ";
+                                var productSales = " . json_encode($product_sales) . ";
+                            </script>";
+
+                        } else {
+                            echo "No products found in orders.\n";
+                        }
+                    ?>
+
+                </div>
+                <div class="col-md-6">
+                    <h2>Popular Colors</h2>
+                    <canvas id="popularColorsChart" width="400" height="auto"></canvas>
+                    <?php
+                        // Aggregation pipeline
+                        $pipeline = [
+                            ['$unwind' => '$products'],
+                            [
+                                '$group' => [
+                                    '_id' => '$products.color',
+                                    'totalQuantity' => ['$sum' => '$products.quantity']
+                                ]
+                            ],
+                            // Sort by totalQuantity in descending order
+                            ['$sort' => ['totalQuantity' => -1]],
+                            // Limit to get the top 5 ordered products
+                            ['$limit' => 5]
+                        ];
+
+                        // Execute aggregation
+                        $result = $orderCollection->aggregate($pipeline);
+
+                        // Fetch and return the top 5 most ordered colors
+                        $topColors = $result->toArray();
+
+                        $color_names = [];
+                        $color_popularity = [];
+
+                        foreach ($topColors as $color) {
+                            // Convert BSONDocument to PHP array
+                            $colorArray = $color->getArrayCopy();
+                        
+                            // Access _id and totalQuantity fields
+                            $colorName = $colorArray['_id'];
+                            $totalQuantity = $colorArray['totalQuantity'];
+                        
+                            $color_names[] = $colorName;
+                            $color_popularity[] = $totalQuantity;
+                        }
+
+                        // Convert PHP arrays to JavaScript for Chart.js
+                        echo "<script>
+                            var colorNames = " . json_encode($color_names) . ";
+                            var colorPopularity = " . json_encode($color_popularity) . ";
+                        </script>";
+                    
+                    ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="w-75 mx-auto">
+                    <h2>Total Revenue per Category</h2>
+                    <canvas id="revenueChart"></canvas>
+                    <?php
+                        try {
+                            // Use the MongoDB orders and products collections
+                            $orderCollection = $db->orders;
+                            $productCollection = $db->products;
+
+                            // Aggregation pipeline
+                            $pipeline = [
+                                // Unwind the products array to process each product individually
+                                ['$unwind' => '$products'],
+
+                                // Lookup to join with the products collection to fetch the price and category
+                                [
+                                    '$lookup' => [
+                                        'from' => 'products', // Collection to join with
+                                        'localField' => 'products.product_id', // Field in the orders collection
+                                        'foreignField' => 'product_id', // Field in the products collection
+                                        'as' => 'productDetails' // Output array containing matched documents
+                                    ]
+                                ],
+
+                                // Unwind the productDetails array to process joined data
+                                ['$unwind' => '$productDetails'],
+                                
+                                [
+                                    '$project' => [
+                                        'category' => '$productDetails.category.name',
+                                        'price' => ['$toDouble' => '$productDetails.price'], // Cast price to double
+                                        'quantity' => ['$toInt' => '$products.quantity'] // Cast quantity to integer
+                                    ]
+                                ],
+
+                                // Group by category and calculate total revenue
+                                [
+                                '$group' => [
+                                    '_id' => '$category', // Group by category name
+                                    'totalRevenue' => [
+                                        '$sum' => ['$multiply' => ['$price', '$quantity']] // Multiply price by quantity
+                                    ]
+                                ]
+                            ],
+
+                                // Sort by total revenue in descending order
+                                ['$sort' => ['totalRevenue' => -1]]
+                            ];
+
+                            // Execute the aggregation pipeline
+                            $result = $orderCollection->aggregate($pipeline);
+
+                            // Process the result
+                            $categories = [];
+                            $revenues = [];
+                            foreach ($result as $data) {
+                                $categories[] = $data['_id']; // Category name
+                                $revenues[] = $data['totalRevenue']; // Total revenue
+                            }
+                        } catch (Exception $e) {
+                            echo "An error occurred: " . $e->getMessage();
+                        }
+                        ?>
+
+                </div>
+            </div>
+        </div>
+        </main>
+        <?php
+        include "inc/footer.inc.php";
+        ?>
         <script>
             // Update product
             $('#updateProductModal').on('show.bs.modal', function(event) {
@@ -416,6 +603,95 @@ $productCollection = $db->products;
                 $('input[name="productSizes[]"]').each(function() {
                     $(this).prop('checked', selectedSizes.includes($(this).next('label').text()));
                 });
+            });
+
+            var topSellingProductsctx = document.getElementById('topSellingProductsChart').getContext('2d');
+            var topSellingProductsChart = new Chart(topSellingProductsctx, {
+                type: 'bar',
+                data: {
+                    labels: productNames, // Product names from PHP
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: productSales, // Sales data from PHP
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        borderColor: 'rgba(0, 0, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var popularColorsctx = document.getElementById('popularColorsChart').getContext('2d');
+            var popularColorsChart = new Chart(popularColorsctx, {
+                type: 'pie',
+                data: {
+                    labels: colorNames,
+                    datasets: [{
+                        data: colorPopularity,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    }
+                }
+            });
+            // PHP data to JavaScript
+            const categories = <?php echo json_encode($categories); ?>;
+            const revenues = <?php echo json_encode($revenues); ?>;
+
+            var revenue_ctx = document.getElementById('revenueChart').getContext('2d');
+
+            // Create the chart
+            var revenueChart = new Chart(revenue_ctx, {
+                type: 'bar', // Bar chart type
+                data: {
+                    labels: categories, // Category names as labels
+                    datasets: [{
+                        label: 'Revenue per Category ($)',
+                        data: revenues, // Revenue values for each category
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Bar color
+                        borderColor: 'rgba(0, 0, 0, 1)', // Border color
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true // Ensure the y-axis starts at 0
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true, // Show the legend
+                            position: 'top', // Legend position
+                        }
+                    }
+                }
             });
         </script>
 </body>
