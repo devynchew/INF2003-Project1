@@ -34,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_colors = isset($_POST['productColors']) ? $_POST['productColors'] : [];
     $product_sizes = isset($_POST['productSizes']) ? $_POST['productSizes'] : [];
     $product_gender = $_POST['productGender'];
+    $product_stock = $_POST['productStock'];
 
     try {
         $product_id = (int) $product_id;
@@ -49,7 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'gender' => $product_gender,
                     'category.name' => $product_category,
                     'colors' => $product_colors,
-                    'sizes' => $product_sizes
+                    'sizes' => $product_sizes,
+                    'stock' => $product_stock
                 ]]);
         } else {
             echo "<p>Product not found.</p>";

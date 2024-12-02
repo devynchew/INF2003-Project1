@@ -99,7 +99,6 @@ $productCollection = $db->products;
                             $colors = (array) $product['colors']; // Convert object to array
                             $sizes = (array) $product['sizes'];   // Convert object to array
 
-
                             echo '<tr>';
                             echo '<td class="">' . $product['product_id'] . '</td>';
                             echo '<td class=""><img src="' . $product['image_url'] . '" alt="Product Image" style="max-width: 30px;"></td>';
@@ -134,7 +133,8 @@ $productCollection = $db->products;
                                     data-name="' . $product['name'] . '" 
                                     data-description="' . $product['description'] . '" 
                                     data-price="' . $product['price'] . '" 
-                                    data-category="' . $product['category']['name'] . '" ';
+                                    data-category="' . $product['category']['name'] . '" ;
+                                    data-stock="' . $product['stock'] . '" ';
 
                             // Data Attributes for Colors
                             if (isset($colors) && is_array($colors)) {
@@ -204,6 +204,10 @@ $productCollection = $db->products;
                                 <label for="productPrice">Price</label>
                                 <input type="number" step="0.01" class="form-control" id="productPrice" name="productPrice" required>
                             </div>
+                            <div class="form-group">
+                                <label for="productStock">Stock</label>
+                                <input type="number" step="1" class="form-control" id="productStock" name="productStock" required>
+                            </div>
                             <!-- Product Category (Dropdown) -->
                             <div class="form-group">
                                 <label for="product_category">Category</label>
@@ -223,7 +227,7 @@ $productCollection = $db->products;
                                 <label for="productColors">Available Colors</label>
                                 <div id="productColors">
                                     <?php
-                                    $colors = $product['colors']; // Access all available colors
+                                    $colors = $productCollection->distinct("colors");
 
                                     if (!empty($colors)) {
                                         foreach ($colors as $color) {
@@ -243,7 +247,7 @@ $productCollection = $db->products;
                                 <label for="productSizes">Available Sizes</label>
                                 <div id="productSizes">
                                     <?php
-                                    $sizes = $product['sizes']; // Access all available sizes
+                                    $sizes = $productCollection->distinct("sizes");
 
                                     if (!empty($sizes)) {
                                         foreach ($sizes as $size) {
@@ -276,6 +280,107 @@ $productCollection = $db->products;
                 </div>
             </div>
         </div>
+        <!-- Add New Product Modal -->
+        <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addProductForm" method="post" action="process_add_product_mdb.php">
+                            <div class="form-group">
+                                <label for="newProductURL">Image URL</label>
+                                <input type="text" class="form-control" id="newProductURL" name="newProductURL" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductName">Product Name</label>
+                                <input type="text" class="form-control" id="newProductName" name="newProductName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductDescription">Description</label>
+                                <textarea class="form-control" id="newProductDescription" name="newProductDescription" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductPrice">Price</label>
+                                <input type="number" step="0.01" class="form-control" id="newProductPrice" name="newProductPrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductStock">Stock</label>
+                                <input type="number" step="1" class="form-control" id="newProductStock" name="newProductStock" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductCategory">Category</label>
+                                <select class="form-control" id="newProductCategory" name="newProductCategory" required>
+                                    <?php
+                                        $categories = $productCollection->aggregate([
+                                            ['$group' => ['_id' => '$category.name']]
+                                        ]);
+
+                                        foreach ($categories as $category) {
+                                            echo '<option value="' . htmlspecialchars($category['_id']) . '">' . htmlspecialchars($category['_id']) . '</option>';
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductColors">Available Colors</label>
+                                <div id="newProductColors">
+                                    <?php
+                                    $colors = $productCollection->distinct("colors");
+
+                                    if (!empty($colors)) {
+                                        foreach ($colors as $color) {
+                                            echo "<div class='form-check'>
+                                                    <input class='form-check-input' type='checkbox' name='newProductColors[]' value='" . htmlspecialchars($color) . "' id='newColor_" . htmlspecialchars($product['product_id'] . '_' . $color) . "'>
+                                                    <label class='form-check-label' for='newColor_" . htmlspecialchars($product['product_id'] . '_' . $color) . "'>" . htmlspecialchars($color) ."</label>
+                                                </div>";
+                                        }
+                                    } else {
+                                        echo "<p>No colors available.</p>";
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductSizes">Available Sizes</label>
+                                <div id="newProductSizes">
+                                    <?php
+                                    $sizes = $productCollection->distinct("sizes");
+
+                                    if (!empty($sizes)) {
+                                        foreach ($sizes as $size) {
+                                            echo "<div class='form-check'>
+                                                    <input class='form-check-input' type='checkbox' name='newProductSizes[]' value='" . htmlspecialchars($size) . "' id='newSize_" . htmlspecialchars($product['product_id'] . '_' . $size) . "'>
+                                                    <label class='form-check-label' for='newSize_" . htmlspecialchars($product['product_id'] . '_' . $size) . "'>" . htmlspecialchars($size) . "</label>
+                                                </div>";
+                                        }
+                                    } else {
+                                        echo "<p>No colors available.</p>";
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductGender">Gender</label>
+                                <select class="form-control" id="newProductGender" name="newProductGender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Unisex">Unisex</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="addProductForm">Add Product</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
             // Update product
             $('#updateProductModal').on('show.bs.modal', function(event) {
@@ -287,6 +392,7 @@ $productCollection = $db->products;
                 var productColors = button.data('colors');
                 var productSizes = button.data('sizes');
                 var productGender = button.data('gender');
+                var productStock = button.data('stock');
                 var categoryName = button.data('category');
 
                 // Populate the form fields with the current product data
@@ -296,6 +402,7 @@ $productCollection = $db->products;
                 $('#productPrice').val(productPrice);
                 $('#productGender').val(productGender);
                 $('#product_category').val(categoryName);
+                $('#productStock').val(productStock);
 
                 // Pre-check the color checkboxes based on the selected colors
                 var selectedColors = productColors.split(', ');
